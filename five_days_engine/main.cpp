@@ -1,25 +1,53 @@
-#include <iostream>
 #include "SFML/Graphics.hpp"
-
-
+#include "GlobalSettings.h"
+#include "Button.h"
 
 int main() {
     setlocale(LC_ALL, "Russian");
 
     sf::RenderWindow window;
-    window.create(sf::VideoMode(800, 600), "5DaysEngine");
+    window.create(s.videomode, s.windowTitle, s.windowStyle);
+
     window.setVerticalSyncEnabled(true);
 
-    sf::Font font;
-    font.loadFromFile("Resources/OnestRegular1602-hint.ttf");
+    Button button(sf::Vector2u(2, 10), "PLAY", []() {});
 
-    // create a text to render
-    sf::Text text;
-    text.setFont(font);
-    text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f));
-    text.setString(L"fsdfhsdjkfhytureio, פûמאנגהûכמא48\n35נמכןûגאנמןא, 5648/*/+¹%;?({})(*@#% ");
-    
-    // main loop
+menu: // main and pause menu loop
+    while (window.isOpen())
+    {
+
+        // events
+        sf::Event e;
+        while (window.pollEvent(e))
+        {
+            switch (e.type) {
+            case sf::Event::Closed: // window closed
+                window.close();
+                break;
+            case sf::Event::MouseButtonReleased: // mouse button pressed
+                
+                if (e.mouseButton.button == sf::Mouse::Button::Left){
+                    return 0;
+                }
+                else{
+                    goto game;
+                }
+                
+
+                break;
+                default:
+                    break;
+                
+            }
+        }
+
+        // render 
+        window.clear(sf::Color::Black);
+        button.updateAndDraw(window);
+        window.display();
+    }
+
+game: // game loop
     while (window.isOpen())
     {
         // events
@@ -33,12 +61,9 @@ int main() {
             case sf::Event::KeyPressed: // key pressed
                 switch (e.key.code)
                 {
-                case sf::Keyboard::Space: // space
+                case sf::Keyboard::Escape: // escape
                 {
-                    // rotate text by 2 degree
-                    static float rotation = 0.0f;
-                    rotation = rotation >= 360.0f ? 0.0f : rotation + 2.0f;
-                    text.setRotation(rotation);
+                    goto menu;
                     break; 
                 }
 
@@ -50,9 +75,9 @@ int main() {
 
         // render 
         window.clear(sf::Color::Black);
-        window.draw(text);
         window.display();
     }
+
 
     return 0;
 }
