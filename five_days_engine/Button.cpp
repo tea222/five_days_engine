@@ -1,8 +1,7 @@
 #include "Button.h"
 
 Button::Button(sf::Vector2u position, std::string title, std::function<void()> callback) 
-    : _position(position)
-    , _title(title)
+    : _title(title)
     , _callback(callback) 
     , _isPressed(false)
     , _isHover(false)

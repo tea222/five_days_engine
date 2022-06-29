@@ -13,7 +13,6 @@ public:
     void updateAndDraw(sf::RenderWindow& window);
     
 private:
-    sf::Vector2u _position;
     std::string _title;
     std::function<void()> _callback;
     bool _isPressed;
