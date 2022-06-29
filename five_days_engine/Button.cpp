@@ -14,6 +14,7 @@ Button::Button(sf::Vector2u position, std::string title, std::function<void()> c
 
     // init text
     _text.setFont(settings::font);
+    _text.setCharacterSize(settings::characterSize);
     _text.setString(title);
     sf::Vector2f rectSize = _rect.getSize();
     sf::Vector2f rectPos = _rect.getPosition();

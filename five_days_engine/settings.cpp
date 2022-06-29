@@ -16,6 +16,7 @@ sf::Color       settings::buttonOutlineColor;
 float           settings::buttonOutlineThickness;
 sf::Vector2f    settings::buttonSize;
 sf::Font        settings::font;
+unsigned int    settings::characterSize;
 
 void settings::load()
 {
@@ -34,6 +35,7 @@ void settings::load()
     buttonOutlineColor      = sf::Color(255, 255, 255, 30);
     buttonSize              = sf::Vector2f(baseUiSizeUnit * 6, baseUiSizeUnit);
     buttonOutlineThickness  = baseUiSizeUnit / 10.0f;                               // 1/10 base ui size unit
+    characterSize           = baseUiSizeUnit / 1.25f;                               // 4/5  base ui size unit
 
     font.loadFromFile("Resources/OnestRegular1602-hint.ttf");
 }

@@ -1,4 +1,5 @@
 #include "SFML/Graphics.hpp"
+#include "SFML/Audio.hpp"
 #include "settings.h"
 #include "Button.h"
 
@@ -21,6 +22,15 @@ int main() {
     Button playButton(sf::Vector2u(2, 10), "PLAY", [&]() {
             currentState = GameState::GAME;
         });
+
+    sf::SoundBuffer b;
+    b.loadFromFile("X:/707cras000h_2.ogg");
+    
+    sf::Sound m;
+    m.setLoop(true);
+    m.setBuffer(b);
+    //m.play();
+
 
 // main and pause menu 
     while (window.isOpen())

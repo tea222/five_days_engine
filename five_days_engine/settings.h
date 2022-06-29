@@ -11,6 +11,7 @@ struct settings
     static unsigned int windowStyle;
     static std::string windowTitle;
     static float baseUiSizeUnit;
+    static unsigned int characterSize;
 
     // design
     static sf::Color buttonColorNormal;
