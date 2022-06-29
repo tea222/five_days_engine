@@ -1,5 +1,5 @@
 #include "SFML/Graphics.hpp"
-#include "GlobalSettings.h"
+#include "settings.h"
 #include "Button.h"
 
 enum class GameState {
@@ -10,8 +10,10 @@ enum class GameState {
 int main() {
     setlocale(LC_ALL, "Russian");
 
+    settings::load();
+
     sf::RenderWindow window;
-    window.create(s.videomode, s.windowTitle, s.windowStyle);
+    window.create(settings::videomode, settings::windowTitle, settings::windowStyle);
 
     window.setVerticalSyncEnabled(true);
     GameState currentState = GameState::MENU;
@@ -77,7 +79,7 @@ int main() {
 
             sf::Text text;
             text.setString("this is where the game is supposed to be..");
-            text.setFont(s.font);
+            text.setFont(settings::font);
             text.setPosition(500, 200);
             window.draw(text);
 

@@ -2,7 +2,7 @@
 #include <functional>
 #include "SFML/Graphics.hpp"
 
-#include "GlobalSettings.h"
+#include "settings.h"
 
 class Button
 {

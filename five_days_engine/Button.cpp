@@ -7,13 +7,13 @@ Button::Button(sf::Vector2u position, std::string title, std::function<void()> c
     , _isHover(false)
 {
     // init rect
-    _rect.setPosition(sf::Vector2f(position.x * s.baseUiSizeUnit, position.y * s.baseUiSizeUnit));
-    _rect.setSize(s.buttonSize);
-    _rect.setOutlineColor(s.buttonOutlineColor);
-    _rect.setOutlineThickness(s.buttonOutlineThickness);
+    _rect.setPosition(sf::Vector2f(position.x * settings::baseUiSizeUnit, position.y * settings::baseUiSizeUnit));
+    _rect.setSize(settings::buttonSize);
+    _rect.setOutlineColor(settings::buttonOutlineColor);
+    _rect.setOutlineThickness(settings::buttonOutlineThickness);
 
     // init text
-    _text.setFont(s.font);
+    _text.setFont(settings::font);
     _text.setString(title);
     sf::Vector2f rectSize = _rect.getSize();
     sf::Vector2f rectPos = _rect.getPosition();
@@ -32,7 +32,7 @@ void Button::updateAndDraw(sf::RenderWindow& window)
         // if left mouse button is pressed
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
             _isPressed = true;
-            _rect.setFillColor(s.buttonColorPressed);
+            _rect.setFillColor(settings::buttonColorPressed);
         }
         else {
             // if it was pressed and now its not
@@ -40,13 +40,13 @@ void Button::updateAndDraw(sf::RenderWindow& window)
                 _callback();
             }
             _isPressed = false;
-            _rect.setFillColor(s.buttonColorHover);
+            _rect.setFillColor(settings::buttonColorHover);
         }
     }
     else
     {
         _isPressed = false;
-        _rect.setFillColor(s.buttonColorNormal);
+        _rect.setFillColor(settings::buttonColorNormal);
     }
 
     window.draw(_rect);
