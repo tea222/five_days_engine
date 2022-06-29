@@ -8,6 +8,12 @@ enum class GameState {
     GAME
 };
 
+enum class SubMenu {
+    MAIN,
+    PAUSE,
+    SETTINGS
+};
+
 int main() {
     setlocale(LC_ALL, "Russian");
 
@@ -18,19 +24,21 @@ int main() {
 
     window.setVerticalSyncEnabled(true);
     GameState currentState = GameState::MENU;
+    SubMenu currentSubMenu = SubMenu::MAIN;
 
-    Button playButton(sf::Vector2u(2, 10), "PLAY", [&]() {
+    std::map<SubMenu, std::vector<Button>> menuButtons;
+
+    // init menu buttons
+    menuButtons[SubMenu::MAIN].push_back(Button(sf::Vector2u(2, 8), "PLAY", [&]() {        // PLAY
             currentState = GameState::GAME;
-        });
+        }));
 
-    sf::SoundBuffer b;
-    b.loadFromFile("X:/707cras000h_2.ogg");
-    
-    sf::Sound m;
-    m.setLoop(true);
-    m.setBuffer(b);
-    //m.play();
-
+    menuButtons[SubMenu::MAIN].push_back(Button(sf::Vector2u(2, 10), "SETTINGS", [&]() {    // SETTINGS
+        currentSubMenu = SubMenu::SETTINGS;
+        }));
+    menuButtons[SubMenu::MAIN].push_back(Button(sf::Vector2u(2, 12), "EXIT", [&]() {        // EXIT
+            window.close(); 
+        }));
 
 // main and pause menu 
     while (window.isOpen())
@@ -54,7 +62,12 @@ int main() {
 
             // render 
             window.clear(sf::Color::Black);
-            playButton.updateAndDraw(window);
+
+            auto& currentButtons = menuButtons[currentSubMenu];
+            for (Button& btn : currentButtons){
+                btn.updateAndDraw(window);
+            }
+
             window.display();
             break;
         }
