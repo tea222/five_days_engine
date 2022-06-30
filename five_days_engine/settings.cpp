@@ -53,10 +53,19 @@ void settings::load()
         for (std::string currentStr; std::getline(file, currentStr); currentKey += 1) {
 
             // convert to wide string
+            static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+            std::wstring wideStr = converter.from_bytes(currentStr);
             
-            
-            lines[static_cast<Line>(currentKey)] = Core().convertToWString(currentStr);
+            lines[static_cast<Line>(currentKey)] = wideStr;
         }
     }
     file.close();
+}
+
+void settings::updateWindowSettings()
+{
+    baseUiSizeUnit = videomode.height / 20.0f;                      // 1/20 window height
+    buttonSize = sf::Vector2f(baseUiSizeUnit * 7, baseUiSizeUnit);
+    buttonOutlineThickness = baseUiSizeUnit / 10.0f;                // 1/10 base ui size unit
+    characterSize = static_cast<unsigned>(baseUiSizeUnit / 1.25f);  // 4/5  base ui size unit
 }

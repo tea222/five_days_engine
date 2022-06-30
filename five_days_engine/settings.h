@@ -5,8 +5,6 @@
 
 #include "SFML/Graphics.hpp"
 
-#include "Core.h"
-
 //#define RELEASE
 
 enum class Line {
@@ -67,5 +65,6 @@ struct settings
 
 
     static void load();
+    static void updateWindowSettings();
 };
 
