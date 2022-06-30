@@ -1,8 +1,7 @@
 #include "Button.h"
 
-Button::Button(sf::Vector2u position, std::string title, std::function<void()> callback) 
-    : _title(title)
-    , _callback(callback) 
+Button::Button(sf::Vector2u position, std::wstring &title, std::function<void()> callback) 
+    : _callback(callback) 
     , _isPressed(false)
     , _isHover(false)
 {
@@ -15,12 +14,12 @@ Button::Button(sf::Vector2u position, std::string title, std::function<void()> c
     // init text
     _text.setFont(settings::font);
     _text.setCharacterSize(settings::characterSize);
-    _text.setString(title);
+    setTitle(title);
     sf::Vector2f rectSize = _rect.getSize();
     sf::Vector2f rectPos = _rect.getPosition();
     _text.setPosition(rectSize.x / 2.0f + rectPos.x, rectSize.y  / 2.0f + rectPos.y);
     sf::FloatRect textBounds = _text.getGlobalBounds();
-    _text.setOrigin(textBounds.width / 2.0f, textBounds.height);
+    _text.setOrigin(textBounds.width / 2.0f, settings::characterSize / 1.5f);
 }
 
 Button::~Button() {
@@ -52,4 +51,9 @@ void Button::updateAndDraw(sf::RenderWindow& window)
 
     window.draw(_rect);
     window.draw(_text);
+}
+
+void Button::setTitle(std::wstring& title){
+
+    _text.setString(title);
 }

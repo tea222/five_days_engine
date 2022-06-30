@@ -1,0 +1,7 @@
+Play
+Continue
+Settings
+Exit
+Change resolution
+Vertical sync: ON
+Vertical sync: OFF

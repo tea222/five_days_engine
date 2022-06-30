@@ -7,13 +7,13 @@
 class Button
 {
 public:
-    Button(sf::Vector2u position, std::string title, std::function<void()> callback);
+    Button(sf::Vector2u position, std::wstring &title, std::function<void()> callback);
     virtual ~Button();
 
     void updateAndDraw(sf::RenderWindow& window);
+    void setTitle(std::wstring &title);
     
 private:
-    std::string _title;
     std::function<void()> _callback;
     bool _isPressed;
     bool _isHover;
