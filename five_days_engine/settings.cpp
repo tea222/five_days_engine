@@ -53,10 +53,9 @@ void settings::load()
         for (std::string currentStr; std::getline(file, currentStr); currentKey += 1) {
 
             // convert to wide string
-            std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-            std::wstring wideStr = converter.from_bytes(currentStr);
-
-            lines[static_cast<Line>(currentKey)] = wideStr;
+            
+            
+            lines[static_cast<Line>(currentKey)] = Core().convertToWString(currentStr);
         }
     }
     file.close();

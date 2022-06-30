@@ -1,7 +1,8 @@
 #include "Button.h"
 
-Button::Button(sf::Vector2u position, std::wstring &title, std::function<void()> callback) 
-    : _callback(callback) 
+Button::Button(ButtonType type, sf::Vector2u position, std::wstring& title, std::function<void()> callback)
+    : _type(type)
+    , _callback(callback) 
     , _isPressed(false)
     , _isHover(false)
 {
@@ -56,4 +57,9 @@ void Button::updateAndDraw(sf::RenderWindow& window)
 void Button::setTitle(std::wstring& title){
 
     _text.setString(title);
+}
+
+ButtonType Button::getType()
+{
+    return _type;
 }

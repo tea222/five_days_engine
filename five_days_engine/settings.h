@@ -5,6 +5,8 @@
 
 #include "SFML/Graphics.hpp"
 
+#include "Core.h"
+
 //#define RELEASE
 
 enum class Line {
@@ -16,8 +18,25 @@ enum class Line {
 
     // settings 
     RESOLUTION,
+    WINDOW_MODE_ON,
+    WINDOW_MODE_OFF,
     VERTICAL_SYNC_ON,
     VERTICAL_SYNC_OFF,
+    BACK
+};
+
+enum class ButtonType {
+    // main and pause menu
+    PLAY,
+    CONTINUE,
+    SETTINGS,
+    EXIT,
+
+    // settings 
+    RESOLUTION,
+    VERTICAL_SYNC,
+    WINDOW_MODE,
+    BACK
 };
 
 struct settings
