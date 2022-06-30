@@ -89,8 +89,8 @@ restart :
 #ifndef RELEASE
                     case sf::Keyboard::F5:
                         goto restart;
-#endif
                         break;
+#endif                  
                     case sf::Keyboard::Escape:
                         if (currentSubMenu == SubMenu::SETTINGS)
                         {
