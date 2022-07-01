@@ -3,8 +3,8 @@ Continue
 Settings
 Exit
 Change resolution
-Window mode: ON
-Window mode: OFF
-Vertical sync: ON
-Vertical sync: OFF
+Window mode
+Vertical sync
+ON
+OFF
 Back

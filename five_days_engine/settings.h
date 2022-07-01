@@ -1,70 +1,66 @@
 #pragma once
 
 #include <codecvt>
+#include <cassert>
 #include <fstream>
 
 #include "SFML/Graphics.hpp"
 
 //#define RELEASE
 
-enum class Line {
-    // main and pouse menu 
-    PLAY,
-    CONTINUE,
-    SETTINGS,
-    EXIT,
-
-    // settings 
-    RESOLUTION,
-    WINDOW_MODE_ON,
-    WINDOW_MODE_OFF,
-    VERTICAL_SYNC_ON,
-    VERTICAL_SYNC_OFF,
-    BACK
-};
-
-enum class ButtonType {
-    // main and pause menu
-    PLAY,
-    CONTINUE,
-    SETTINGS,
-    EXIT,
-
-    // settings 
-    RESOLUTION,
-    VERTICAL_SYNC,
-    WINDOW_MODE,
-    BACK
-};
-
-struct settings
+static class Settings
 {
-    
+private:
     // window
-    static sf::VideoMode videomode;
-    static unsigned int windowStyle;
-    static std::string windowTitle;
-    static float baseUiSizeUnit;
-    static unsigned int characterSize;
+    sf::VideoMode   _videomode;
+    unsigned int    _windowStyle;
+    std::string     _windowTitle;
+    float           _baseUiSizeUnit;
+    unsigned int    _characterSize;
 
     // design
-    static sf::Color buttonColorNormal;
-    static sf::Color buttonColorHover;
-    static sf::Color buttonColorPressed;
-    static sf::Color buttonOutlineColor;
-    static float buttonOutlineThickness;
-    static sf::Vector2f buttonSize;
-    static std::map<Line, std::wstring> lines;
-    static bool enableVerticalSync;
+    sf::Color       _buttonColorNormal;
+    sf::Color       _buttonColorHover;
+    sf::Color       _buttonColorPressed;
+    sf::Color       _buttonOutlineColor;
+    float           _buttonOutlineThickness;
+    sf::Vector2f    _buttonSize;
+    bool            _verticalSyncEnabled;
 
     //gameplay
     // ..nothing yet
 
     // resources
-    static sf::Font font;
+    sf::Font _font;
 
+    void updateWindowParameters();
 
-    static void load();
-    static void updateWindowSettings();
-};
+public:
+    Settings();
+    virtual ~Settings();
+
+    void load();
+
+    // getters
+    const sf::VideoMode&    getVideomode();
+    unsigned int            getWindowStyle();
+    const std::string&      getWindowTitle();
+    float                   getBaseUiSizeUnit();
+    unsigned int            getCharacterSize();
+
+    const sf::Color&        getButtonColorNormal();
+    const sf::Color&        getButtonColorHover();
+    const sf::Color&        getButtonColorPressed();
+    const sf::Color&        getButtonOutlineColor();
+    float                   getButtonOutlineThickness();
+    const sf::Vector2f&     getButtonSize();
+    bool                    getVerticalSyncEnabled();
+
+    sf::Font&               getFont();
+
+    // setters
+    void                    setVideomode(const sf::VideoMode& videoMode);
+    void                    setWindowStyle(unsigned int style);
+    void                    setVerticalSyncEnabled(bool enabled);
+} s;
 

@@ -2,15 +2,18 @@
 #include "SFML/Audio.hpp"
 
 #include "Core.h"
-#include "settings.h"
-#include "Button.h"
-
 
 int main() {
     setlocale(LC_ALL, "Russian");
 
-    Core core;
-    core.launchApp();
+    //Core core;
+
+    s.load();
+    std::wstring sa;
+    Button(sf::Vector2u(0, 0), sa, []() {});
+    
+
+    //core.launchGame();
 
     return 0;
 }
