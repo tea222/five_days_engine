@@ -1,35 +1,28 @@
 #include "Settings.h"
 
-Settings::Settings()
-    : _videomode(sf::VideoMode(0, 0, 0))
-    , _windowStyle(0)
-    , _windowTitle("")
-    , _baseUiSizeUnit(0.0f)
-    , _characterSize(0)
-
-    , _buttonColorNormal(sf::Color::Black)
-    , _buttonColorHover(sf::Color::Black)
-    , _buttonColorPressed(sf::Color::Black)
-    , _buttonOutlineColor(sf::Color::Black)
-    , _buttonOutlineThickness(0)
-    , _buttonSize(sf::Vector2f(0, 0))
-    , _verticalSyncEnabled(false)
-{
-}
-
-Settings::~Settings()
-{
-}
+sf::VideoMode   Settings::_videomode                = sf::VideoMode::getDesktopMode();
+unsigned int    Settings::_windowStyle              = sf::Style::Default;
+std::string     Settings::_windowTitle              = "";
+float           Settings::_baseUiSizeUnit           = 0.0f;
+unsigned int    Settings::_characterSize            = 0;
+sf::Color       Settings::_buttonColorNormal        = sf::Color::Black;
+sf::Color       Settings::_buttonColorHover         = sf::Color::Black;
+sf::Color       Settings::_buttonColorPressed       = sf::Color::Black;
+sf::Color       Settings::_buttonOutlineColor       = sf::Color::Black;
+float           Settings::_buttonOutlineThickness   = 0.0f;
+sf::Vector2f    Settings::_buttonSize               = sf::Vector2f(0.0f, 0.0f);
+bool            Settings::_verticalSyncEnabled      = false;
+sf::Font        Settings::_font;
 
 // TODO: if i decide to work on this engine after the contest, this shoud all be read from file
 void Settings::load()
 {
 #ifdef RELEASE
     _windowStyle            = sf::Style::Fullscreen;
-    _videomode              = sf::VideoMode::getFullscreenModes().at(0);    // native resolution
+    _videomode              = sf::VideoMode::getDesktopMode();  // native resolution
 #else
     _windowStyle            = sf::Style::Default;
-    _videomode              = sf::VideoMode(1280, 720, 32);                 // 720p
+    _videomode              = sf::VideoMode(1280, 720, 32);     // 720p
 #endif
     _windowTitle            = "five_days_engine";
     _buttonColorNormal      = sf::Color(255, 255, 255, 50);

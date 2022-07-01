@@ -15,7 +15,6 @@ Button::Button(const sf::Vector2u& position, const std::wstring& title, const st
     , _isPressed(false)
     , _isHover(false)
 {
-    s.setVerticalSyncEnabled(false);
     // init rect
     _rect.setPosition(sf::Vector2f(position.x * _baseUiSizeUnit, position.y * _baseUiSizeUnit));
     _rect.setSize(_size);

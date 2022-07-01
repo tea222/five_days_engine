@@ -6,14 +6,10 @@
 int main() {
     setlocale(LC_ALL, "Russian");
 
-    //Core core;
-
-    s.load();
-    std::wstring sa;
-    Button(sf::Vector2u(0, 0), sa, []() {});
+    Core core;
     
 
-    //core.launchGame();
+    core.launchGame();
 
     return 0;
 }

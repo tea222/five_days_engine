@@ -35,7 +35,6 @@ enum class StockButton {
 class Core
 {
 private:
-    //Settings _settings;
 
     sf::RenderWindow _window;
     GameState _currentState;
