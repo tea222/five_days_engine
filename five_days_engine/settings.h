@@ -13,6 +13,7 @@ class Settings
 private:
     // window
     static sf::VideoMode   _videomode;
+    static bool            _verticalSyncEnabled;
     static unsigned int    _windowStyle;
     static std::string     _windowTitle;
     static float           _baseUiSizeUnit;
@@ -25,7 +26,6 @@ private:
     static sf::Color       _buttonOutlineColor;
     static float           _buttonOutlineThickness;
     static sf::Vector2f    _buttonSize;
-    static bool            _verticalSyncEnabled;
 
     //gameplay
     // ..nothing yet

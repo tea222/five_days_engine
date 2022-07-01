@@ -1,20 +1,5 @@
 #include "Core.h"
 
-void Core::updateButtonsParameters()
-{
-    Button::setButtonsParameters(
-        Settings::getButtonSize(),
-        Settings::getCharacterSize(),
-        Settings::getButtonColorNormal(),
-        Settings::getButtonColorHover(),
-        Settings::getButtonColorPressed(),
-        Settings::getButtonOutlineColor(),
-        Settings::getButtonOutlineThickness(),
-        Settings::getBaseUiSizeUnit(),
-        Settings::getFont()
-    );
-}
-
 void Core::createWindow()
 {
     _window.create(Settings::getVideomode(), Settings::getWindowTitle(), Settings::getWindowStyle());
@@ -201,7 +186,6 @@ Core::Core()
     , _hasGameStarted(false)
 {
     Settings::load();
-    updateButtonsParameters();
 }
 
 Core::~Core()

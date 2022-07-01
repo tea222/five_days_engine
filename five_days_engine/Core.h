@@ -47,7 +47,6 @@ private:
 
     void createWindow();
     void loadLines();
-    void updateButtonsParameters();
 
     std::wstring convertToWString(std::string str);
     std::wstring getCurrentResolutionStr();
