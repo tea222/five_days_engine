@@ -14,6 +14,13 @@ void Core::launchGame()
 
     createWindow();
 
+    // init background
+    sf::Texture* backgroundTexture = new sf::Texture();
+    backgroundTexture->loadFromFile("Resources/background.jpg");
+    sf::Vector2f backgroundSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
+    _menuBackground.setSize(backgroundSize);
+    _menuBackground.setTexture(backgroundTexture);
+
     // main loop 
     while (_window.isOpen())
     {
@@ -63,6 +70,16 @@ void Core::launchGame()
             // render 
             _window.clear(sf::Color::Black);
 
+            // background
+            sf::Vector2f textureSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
+            sf::Vector2f windowSize = static_cast<sf::Vector2f>(_window.getSize());
+            float scale = windowSize.x / textureSize.x;
+            _menuBackground.setSize(textureSize * scale);
+            _menuBackground.setOrigin(textureSize * scale / 2.0f);
+            _menuBackground.setPosition(windowSize / 2.0f);
+            _window.draw(_menuBackground);
+
+            // buttons
             auto& currentButtons = _menuButtons[_currentSubMenu];
             for (Button& btn : currentButtons) {
                 btn.updateAndDraw(_window);
@@ -122,6 +139,7 @@ Core::Core()
     : _currentState(GameState::MENU)
     , _currentSubMenu(SubMenu::MAIN)
     , _hasGameStarted(false)
+    , _gameCamera(sf::View(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(0.0f, 0.0f)))
 {
     Settings::load();
     loadLines();
@@ -227,7 +245,7 @@ void Core::addStockButton(StockButton buttonType, const std::wstring& title)
 {
     SubMenu subMenu(SubMenu::MAIN);
     sf::Vector2u position(0, 0);
-    Button::ButtonCallback& callback(onExitBtnPressed);
+    Button::ButtonCallback callback = onExitBtnPressed;
     bool useAdditionalLabel = false;
     std::wstring additLabelStr;
 

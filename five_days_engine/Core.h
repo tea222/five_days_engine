@@ -66,8 +66,11 @@ private:
     SwitchButtonStateStringsMap _switchBtnStateStringsMap;
 
     std::map<SubMenu, std::vector<Button>> _menuButtons;
+    sf::RectangleShape _menuBackground;
 
     std::vector<std::wstring> _lines;
+
+    sf::View _gameCamera;
 
     void createWindow();
     void loadLines();
