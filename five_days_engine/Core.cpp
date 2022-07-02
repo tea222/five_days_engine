@@ -6,77 +6,6 @@ void Core::createWindow()
     _window.setVerticalSyncEnabled(Settings::getVerticalSyncEnabled());
 }
 
-    /*
-    // clear menu buttons map
-    for (std::pair<const SubMenu, std::vector<Button>>& elem : _menuButtons){
-        elem.second.clear();
-    }
-
-    // init main menu buttons 
-    _menuButtons[SubMenu::MAIN].push_back(Button(ButtonType::PLAY, sf::Vector2u(2, 8), Settings::lines[Line::PLAY], [&]() {                  // PLAY
-        
-        }));
-
-    _menuButtons[SubMenu::MAIN].push_back(Button(ButtonType::SETTINGS, sf::Vector2u(2, 10), Settings::lines[Line::SETTINGS], [&]() {         // SETTINGS
-        
-        }));
-
-    _menuButtons[SubMenu::MAIN].push_back(Button(ButtonType::PLAY, sf::Vector2u(2, 12), Settings::lines[Line::EXIT], [&]() {                 // EXIT
-        
-        }));
-
-    // init settings buttons
-    sf::Vector2u resolutionBtnPos(2, 8);
-
-    _resolutionText.setPosition(resolutionBtnPos.x * Settings::getBeseUiSizeUnit()
-        + Settings::buttonSize.x + Settings::buttonOutlineThickness * 2.0f, resolutionBtnPos.y * Settings::getBeseUiSizeUnit());
-    _resolutionText.setString(getCurrentResolutionStr());
-    _resolutionText.setFont(Settings::getFont());
-    _resolutionText.setCharacterSize(Settings::characterSize);
-
-    Button resolutionBtn = Button(ButtonType::RESOLUTION, resolutionBtnPos, Settings::lines[Line::RESOLUTION], [&]() {                      // CHANGE RESOLUTION
-        
-        });
-    _menuButtons[SubMenu::SETTINGS].push_back(resolutionBtn);
-
-
-    _menuButtons[SubMenu::SETTINGS].push_back(Button(ButtonType::VERTICAL_SYNC, sf::Vector2u(2, 10),
-        Settings::lines[Settings::getVerticalSyncEnabled() ? Line::VERTICAL_SYNC_ON : Line::VERTICAL_SYNC_OFF], [&]() {                           // VERTICAL SYNC
-
-            Settings::getVerticalSyncEnabled() = !Settings::getVerticalSyncEnabled();
-            _window.setVerticalSyncEnabled(Settings::getVerticalSyncEnabled());
-            auto verticalSyncBtnIt = std::find_if(_menuButtons[SubMenu::SETTINGS].begin(), _menuButtons[SubMenu::SETTINGS].end(), [&](Button& btn) {
-                return btn.getType() == ButtonType::VERTICAL_SYNC;
-                });
-            verticalSyncBtnIt->setTitle(Settings::lines[Settings::getVerticalSyncEnabled() ? Line::VERTICAL_SYNC_ON : Line::VERTICAL_SYNC_OFF]);
-        }));
-
-    _menuButtons[SubMenu::SETTINGS].push_back(Button(ButtonType::WINDOW_MODE, sf::Vector2u(2, 12),
-        Settings::lines[Settings::getWindowStyle() == sf::Style::Default ? Line::WINDOW_MODE_ON : Line::WINDOW_MODE_OFF], [&]() {                // WINDOW MODE
-
-            
-        }));
-
-    _menuButtons[SubMenu::SETTINGS].push_back(Button(ButtonType::BACK, sf::Vector2u(2, 14), Settings::lines[Line::BACK], [&]() {             // BACK
-        _currentSubMenu = _hasGameStarted ? SubMenu::PAUSE : SubMenu::MAIN;
-        }));
-
-    // init pause buttons
-    _menuButtons[SubMenu::PAUSE].push_back(Button(ButtonType::CONTINUE, sf::Vector2u(2, 8), Settings::lines[Line::CONTINUE], [&]() {         // CONTINUE
-        
-        }));
-
-    _menuButtons[SubMenu::PAUSE].push_back(Button(ButtonType::SETTINGS, sf::Vector2u(2, 10), Settings::lines[Line::SETTINGS], [&]() {        // SETTINGS
-        _currentSubMenu = SubMenu::SETTINGS;
-        }));
-
-    _menuButtons[SubMenu::PAUSE].push_back(Button(ButtonType::EXIT, sf::Vector2u(2, 12), Settings::lines[Line::EXIT], [&]() {                // EXIT
-        _window.close();
-        }));
-
-    */
-
-
 void Core::launchGame()
 {
 #ifndef RELEASE
@@ -84,10 +13,6 @@ void Core::launchGame()
 #endif
 
     createWindow();
-
-    std::wstring w;
-    w = convertToWString("EXIT");
-    _menuButtons[SubMenu::MAIN].push_back(Button(sf::Vector2u(2, 2), w, [&]() {_window.close(); }));
 
     // main loop 
     while (_window.isOpen())
@@ -128,7 +53,6 @@ void Core::launchGame()
                     Settings::setVideomode(newVideoMode);
                     sf::View newView(viewSize / 2.0f, viewSize);
                     _window.setView(newView);
-                    int asd = 4;
                     break;
                 }
                 default:
@@ -199,10 +123,68 @@ Core::Core()
     , _hasGameStarted(false)
 {
     Settings::load();
+    loadLines();
+
+    // init stock button callbacks
+    onPlayBtnPressed = [&](Button* buttonPtr) {         // PLAY
+        _currentState = GameState::GAME;
+        _hasGameStarted = true;
+    };
+
+    onContinueBtnPressed = [&](Button* buttonPtr) {     // CONTINUE
+        _currentState = GameState::GAME;
+    };
+
+    onSettingsBtnPressed = [&](Button* buttonPtr) {     // SETTINGS
+        _currentSubMenu = SubMenu::SETTINGS;
+    };
+
+    onExitBtnPressed = [&](Button* buttonPtr) {         // EXIT
+        _window.close();
+    };
+
+    onResolutionBtnPressed = [&](Button* buttonPtr) {   // CHANGE RESOLUTION
+        static std::vector<sf::VideoMode> allVideomodes = sf::VideoMode::getFullscreenModes();
+
+        auto currentVideoModeIt = std::find_if(allVideomodes.begin(), allVideomodes.end(), [&](sf::VideoMode& mode) {
+            return mode == Settings::getVideomode();
+            });
+        currentVideoModeIt += 1;
+        currentVideoModeIt = currentVideoModeIt == allVideomodes.end() ? allVideomodes.begin() : currentVideoModeIt;
+
+        Settings::setVideomode(*currentVideoModeIt);
+        buttonPtr->setAdditionalLabelStr(getCurrentResolutionStr());
+        createWindow();
+    };
+
+    onWindowModeBtnPressed = [&](Button* buttonPtr) {   // WINDOW MODE
+        bool setWindowMode = Settings::getWindowStyle() == sf::Style::Fullscreen;
+        Settings::setWindowStyle(setWindowMode ? sf::Style::Default : sf::Style::Fullscreen);
+
+        buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setWindowMode ? SwitchButtonState::ON : SwitchButtonState::OFF]);
+        createWindow();
+    };
+
+    onVerticalSyncBtnPressed = [&](Button* buttonPtr) { // VERTICAL SYNC
+        bool setEnabled = !Settings::getVerticalSyncEnabled();
+        Settings::setVerticalSyncEnabled(setEnabled);
+        _window.setVerticalSyncEnabled(setEnabled);
+
+        buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setEnabled ? SwitchButtonState::ON : SwitchButtonState::OFF]);
+    };
+
+    onBackBtnPressed = [&](Button* buttonPtr) {         // BACK
+        _currentSubMenu = _hasGameStarted ? SubMenu::PAUSE : SubMenu::MAIN;
+    };
 }
 
 Core::~Core()
 {
+}
+
+void Core::setSwitchButtonStateStrings(const SwitchButtonStateStringsMap& stringsMap)
+{
+    _switchBtnStateStringsMap = stringsMap;
 }
 
 std::wstring& Core::getLineById(unsigned int id)
@@ -240,64 +222,92 @@ void Core::loadLines()
     file.close();
 }
 
-void Core::addStockButton(StockButton buttonType)
+void Core::addStockButton(StockButton buttonType, const std::wstring& title)
 {
+    SubMenu subMenu(SubMenu::MAIN);
+    sf::Vector2u position(0, 0);
+    Button::ButtonCallback& callback(onExitBtnPressed);
+    bool useAdditionalLabel = false;
+    std::wstring additLabelStr;
+
+    switch (buttonType)
+    {
+    case Core::StockButton::PLAY:
+        subMenu = SubMenu::MAIN;
+        position = sf::Vector2u(2, 8);
+        callback = onPlayBtnPressed;
+        break;
+    case Core::StockButton::CONTINUE:
+        subMenu = SubMenu::PAUSE;
+        position = sf::Vector2u(2, 8);
+        callback = onContinueBtnPressed;
+        break;
+    case Core::StockButton::SETTINGS_MAIN_MENU:
+        subMenu = SubMenu::MAIN;
+        position = sf::Vector2u(2, 10);
+        callback = onSettingsBtnPressed;
+        break;
+    case Core::StockButton::SETTINGS_PAUSE:
+        subMenu = SubMenu::PAUSE;
+        position = sf::Vector2u(2, 10);
+        callback = onSettingsBtnPressed;
+        break;
+    case Core::StockButton::EXIT_MAIN_MENU:
+        subMenu = SubMenu::MAIN;
+        position = sf::Vector2u(2, 12);
+        callback = onExitBtnPressed;
+        break;
+    case Core::StockButton::EXIT_PAUSE:
+        subMenu = SubMenu::PAUSE;
+        position = sf::Vector2u(2, 12);
+        callback = onExitBtnPressed;
+        break;
+    case Core::StockButton::CHANGE_RESOLUTION:
+        subMenu = SubMenu::SETTINGS;
+        position = sf::Vector2u(2, 8);
+        callback = onResolutionBtnPressed;
+        useAdditionalLabel = true;
+        additLabelStr = getCurrentResolutionStr();
+        break;
+    case Core::StockButton::WINDOW_MODE:
+        subMenu = SubMenu::SETTINGS;
+        position = sf::Vector2u(2, 10);
+        callback = onWindowModeBtnPressed;
+        useAdditionalLabel = true;
+        additLabelStr = _switchBtnStateStringsMap[Settings::getWindowStyle() == sf::Style::Default ? SwitchButtonState::ON : SwitchButtonState::OFF];
+        break;
+    case Core::StockButton::VERTICAL_SYNC:
+        subMenu = SubMenu::SETTINGS;
+        position = sf::Vector2u(2, 12);
+        callback = onVerticalSyncBtnPressed;
+        useAdditionalLabel = true;
+        additLabelStr = _switchBtnStateStringsMap[Settings::getVerticalSyncEnabled() ? SwitchButtonState::ON : SwitchButtonState::OFF];
+        break;
+    case Core::StockButton::BACK:
+        subMenu = SubMenu::SETTINGS;
+        position = sf::Vector2u(2, 14);
+        callback = onBackBtnPressed;
+        break;
+    default:
+        break;
+    }
+
+    addButton(subMenu, position, title, callback, useAdditionalLabel, additLabelStr);
 }
 
-void Core::addButton(SubMenu subMenu, sf::Vector2u& position, std::wstring& title, std::function<void()> callback)
+void Core::addAllStockButtons(std::map<StockButton, std::wstring> titles)
 {
+    int i = 0;
+    StockButton btn = static_cast<StockButton>(i);
+    while (static_cast<StockButton>(i) <= StockButton::BACK) 
+    {
+        addStockButton(btn, titles[btn]);
+        btn = static_cast<StockButton>(++i);
+    }
 }
 
-void Core::onPlayBtnPressed()
+void Core::addButton(SubMenu subMenu, const sf::Vector2u& position, const std::wstring& title,
+    Button::ButtonCallback callback, bool useAdditionalLabel, const std::wstring& additionalLabelStr)
 {
-    _currentState = GameState::GAME;
-    _hasGameStarted = true;
-}
-
-void Core::onContinueBtnPressed()
-{
-    _currentState = GameState::GAME;
-}
-
-void Core::onSettingsBtnPressed()
-{
-    _currentSubMenu = SubMenu::SETTINGS;
-}
-
-void Core::onExitBtnPressed()
-{
-    _window.close();
-}
-
-void Core::onResolutionBtnPressed()
-{
-    static std::vector<sf::VideoMode> allVideomodes = sf::VideoMode::getFullscreenModes();
-
-    auto currentVideoModeIt = std::find_if(allVideomodes.begin(), allVideomodes.end(), [&](sf::VideoMode& mode) {
-        return mode == Settings::getVideomode();
-        });
-    currentVideoModeIt += 1;
-
-    currentVideoModeIt = currentVideoModeIt == allVideomodes.end() ? allVideomodes.begin() : currentVideoModeIt;
-    Settings::setVideomode(*currentVideoModeIt);
-    createWindow();
-}
-
-void Core::onWindowModeBtnPressed()
-{
-    /*Settings::setWindowStyle(Settings::getWindowStyle() == sf::Style::Default ? sf::Style::Fullscreen : sf::Style::Default);
-    _window.setVerticalSyncEnabled(Settings::getVerticalSyncEnabled());
-    auto windowModeBtnIt = std::find_if(_menuButtons[SubMenu::SETTINGS].begin(), _menuButtons[SubMenu::SETTINGS].end(), [&](Button& btn) {
-        return btn.getType() == ButtonType::WINDOW_MODE;
-        });
-    windowModeBtnIt->setTitle(Settings::getWindowStyle() == sf::Style::Default ? Settings::lines[Line::WINDOW_MODE_ON] : Settings::lines[Line::WINDOW_MODE_OFF]);
-    createWindow();*/
-}
-
-void Core::onVerticalSyncBtnPressed()
-{
-}
-
-void Core::onBackBtnPressed()
-{
+    _menuButtons[subMenu].push_back(Button(position, title, callback, useAdditionalLabel, additionalLabelStr));
 }

@@ -105,9 +105,9 @@ void Settings::setVideomode(const sf::VideoMode& videoMode)
 
     _uiMapCellSize.x = _videomode.width / UI_MAP_SIZE.x;
     _uiMapCellSize.y = _videomode.height / UI_MAP_SIZE.y;
-    _buttonSize = sf::Vector2f(_uiMapCellSize.x * 7, _uiMapCellSize.y);
+    _buttonSize = sf::Vector2f(_uiMapCellSize.x * 8, _uiMapCellSize.y);
     _buttonOutlineThickness = _uiMapCellSize.y / 10.0f;                 // 1/10 cell height
-    _characterSize = static_cast<unsigned>(_uiMapCellSize.y / 1.25f);   // 4/5  cell height
+    _characterSize = static_cast<unsigned>(_uiMapCellSize.x / 1.25f);   // 4/5  cell width
 }
 
 void Settings::setWindowStyle(unsigned int style)

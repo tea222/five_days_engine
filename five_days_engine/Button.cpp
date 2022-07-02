@@ -1,10 +1,12 @@
 #include "Button.h"
 
-Button::Button(const sf::Vector2u& position, const std::wstring& title, const std::function<void()>& callback, std::vector<std::string> additionalTitles)
+Button::Button(const sf::Vector2u& position, const std::wstring& title, ButtonCallback callback,
+    bool useAdditionalLabel, const std::wstring& additionalLabelStr)
     : _position(position)
     , _callback(callback) 
     , _isPressed(false)
     , _isHover(false)
+    , _useAdditionalLabel(useAdditionalLabel)
 {
     // init convex
     _convex.setOutlineColor(Settings::getButtonOutlineColor());
@@ -13,11 +15,20 @@ Button::Button(const sf::Vector2u& position, const std::wstring& title, const st
     updateConvexPoints();
 
     // init text
-    _text.setFont(Settings::getFont());
-    _text.setString(title);
+    _title.setFont(Settings::getFont());
+    _title.setString(title);
+
+    // init additional label
+    _additionalLabel.setFont(Settings::getFont());
+    _additionalLabel.setString(additionalLabelStr);
 }
 
 Button::~Button() {
+}
+
+void Button::setAdditionalLabelStr(const std::wstring& str)
+{
+    _additionalLabel.setString(str);
 }
 
 void Button::updateAndDraw(sf::RenderWindow& window)
@@ -29,15 +40,22 @@ void Button::updateAndDraw(sf::RenderWindow& window)
     _convex.setPosition(_position.x * Settings::getUiMapCellSize().x, _position.y * Settings::getUiMapCellSize().y);
     _convex.setOutlineThickness(Settings::getButtonOutlineThickness());
 
-    //text
-    _text.setCharacterSize(Settings::getCharacterSize());
     sf::Vector2f buttonSize = Settings::getButtonSize();
     sf::Vector2f rectPos = _convex.getPosition();
-    _text.setPosition(buttonSize.x / 2.0f + rectPos.x, buttonSize.y / 2.0f + rectPos.y);
-    sf::FloatRect textBounds = _text.getGlobalBounds();
-    _text.setOrigin(textBounds.width / 2.0f, _text.getCharacterSize() / 1.5f);
 
-    // update button state
+    //text
+    _title.setCharacterSize(Settings::getCharacterSize());
+    sf::FloatRect textBounds = _title.getGlobalBounds();
+    _title.setPosition(buttonSize.x / 2.0f + rectPos.x, buttonSize.y / 2.0f + rectPos.y);
+    _title.setOrigin(textBounds.width / 2.0f, _title.getCharacterSize() / 1.5f);
+
+    // additional label
+    if (_useAdditionalLabel)
+    {
+        _additionalLabel.setCharacterSize(Settings::getCharacterSize());
+        _additionalLabel.setPosition(buttonSize.x + rectPos.x + Settings::getButtonOutlineThickness() * 2.0f, buttonSize.y / 2.0f + rectPos.y);
+        _additionalLabel.setOrigin(0.0f, _additionalLabel.getCharacterSize() / 1.5f);
+    }
 
     // if mouse pointer is in the rect
     if (_convex.getGlobalBounds().contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(window)))){
@@ -49,7 +67,7 @@ void Button::updateAndDraw(sf::RenderWindow& window)
         else {
             // if it was pressed and now its not
             if (_isPressed) {
-                _callback();
+                _callback(this);
             }
             _isPressed = false;
             _convex.setFillColor(Settings::getButtonColorHover());
@@ -64,7 +82,11 @@ void Button::updateAndDraw(sf::RenderWindow& window)
     // render
 
     window.draw(_convex);
-    window.draw(_text);
+    window.draw(_title);
+    if (_useAdditionalLabel)
+    {
+        window.draw(_additionalLabel);
+    }
 }
 
 void Button::updateConvexPoints()
