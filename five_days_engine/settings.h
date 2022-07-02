@@ -8,32 +8,32 @@
 
 //#define RELEASE
 
+#define UI_MAP_SIZE sf::Vector2u(35, 20)
+
 class Settings
 {
 private:
     // window
-    static sf::VideoMode   _videomode;
-    static bool            _verticalSyncEnabled;
-    static unsigned int    _windowStyle;
-    static std::string     _windowTitle;
-    static float           _baseUiSizeUnit;
-    static unsigned int    _characterSize;
+    static sf::VideoMode    _videomode;
+    static bool             _verticalSyncEnabled;
+    static unsigned int     _windowStyle;
+    static std::string      _windowTitle;
+    static sf::Vector2f     _uiMapCellSize;
+    static unsigned int     _characterSize;
 
     // design
-    static sf::Color       _buttonColorNormal;
-    static sf::Color       _buttonColorHover;
-    static sf::Color       _buttonColorPressed;
-    static sf::Color       _buttonOutlineColor;
-    static float           _buttonOutlineThickness;
-    static sf::Vector2f    _buttonSize;
+    static sf::Color        _buttonColorNormal;
+    static sf::Color        _buttonColorHover;
+    static sf::Color        _buttonColorPressed;
+    static sf::Color        _buttonOutlineColor;
+    static float            _buttonOutlineThickness;
+    static sf::Vector2f     _buttonSize;
 
     //gameplay
     // ..nothing yet
 
     // resources
     static sf::Font _font;
-
-    static void updateWindowParameters();
 
 public:
 
@@ -43,7 +43,7 @@ public:
     static const sf::VideoMode& getVideomode();
     static unsigned int         getWindowStyle();
     static const std::string&   getWindowTitle();
-    static float                getBaseUiSizeUnit();
+    static const sf::Vector2f&  getUiMapCellSize();
     static unsigned int         getCharacterSize();
 
     static const sf::Color&     getButtonColorNormal();

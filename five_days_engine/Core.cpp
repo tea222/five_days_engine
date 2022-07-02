@@ -85,6 +85,10 @@ void Core::launchGame()
 
     createWindow();
 
+    std::wstring w;
+    w = convertToWString("EXIT");
+    _menuButtons[SubMenu::MAIN].push_back(Button(sf::Vector2u(2, 2), w, [&]() {_window.close(); }));
+
     // main loop 
     while (_window.isOpen())
     {
@@ -100,9 +104,7 @@ void Core::launchGame()
                 case sf::Event::Closed: // window closed
                     _window.close();
                     break;
-                default:
-                    break;
-                case sf::Event::KeyPressed:
+                case sf::Event::KeyPressed: // key pressed
                     switch (e.key.code)
                     {
 #ifndef RELEASE
@@ -119,9 +121,18 @@ void Core::launchGame()
                     default:
                         break;
                     }
+                case sf::Event::Resized:
+                {
+                    sf::Vector2f viewSize(e.size.width, e.size.height);
+                    sf::VideoMode newVideoMode(viewSize.x, viewSize.y);
+                    Settings::setVideomode(newVideoMode);
+                    sf::View newView(viewSize / 2.0f, viewSize);
+                    _window.setView(newView);
+                    int asd = 4;
+                    break;
+                }
                 }
             }
-
             // render 
             _window.clear(sf::Color::Black);
 

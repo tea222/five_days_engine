@@ -6,15 +6,14 @@
 class Button
 {
 public:
-    Button(const sf::Vector2u& position, const std::wstring &title, const std::function<void()> &callback);
+    Button(const sf::Vector2u& position, const std::wstring& title, const std::function<void()>& callback, std::vector<std::string> additionalTitles = { });
     virtual ~Button();
 
     void updateAndDraw(sf::RenderWindow& window);
-
-    sf::Vector2u getPosition();
     
 private:
 
+    std::vector<std::wstring> _additionalTitles;
     sf::Vector2u _position;
     std::function<void()> _callback;
     bool _isPressed;
