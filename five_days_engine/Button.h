@@ -20,7 +20,9 @@ private:
     bool _isHover;
 
     // things to render
-    sf::RectangleShape _rect;
+    sf::ConvexShape _convex;
     sf::Text _text;
+
+    void updateConvexPoints();
 };
 

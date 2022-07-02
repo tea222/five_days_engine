@@ -131,6 +131,8 @@ void Core::launchGame()
                     int asd = 4;
                     break;
                 }
+                default:
+                    break;
                 }
             }
             // render 
