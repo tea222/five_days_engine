@@ -46,6 +46,7 @@ void Core::launchGame()
                     default:
                         break;
                     }
+                    break;
                 case sf::Event::Resized:
                 {
                     sf::Vector2f viewSize(e.size.width, e.size.height);
