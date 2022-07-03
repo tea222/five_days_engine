@@ -318,7 +318,7 @@ void Core::addAllStockButtons(std::map<StockButton, std::wstring> titles)
 {
     int i = 0;
     StockButton btn = static_cast<StockButton>(i);
-    while (static_cast<StockButton>(i) <= StockButton::BACK) 
+    while (i <= static_cast<int>(StockButton::BACK))
     {
         addStockButton(btn, titles[btn]);
         btn = static_cast<StockButton>(++i);

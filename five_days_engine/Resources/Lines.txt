@@ -1,10 +1,12 @@
 Play
 Continue
 Settings
+Settings
+Exit
 Exit
 Change resolution
 Window mode
 Vertical sync
+Back
 ON
 OFF
-Back
