@@ -184,8 +184,8 @@ void Core::onEvent(EventType eType, std::vector<void*> params)
     {
         case EventType::STOCK_BUTTON_PRESSED:   // STOCK BUTTON PRESSED
         {
-            Button::ButtonType btnType = *(static_cast<Button::ButtonType*>(params.at(0)));
-            Button* buttonPtr = static_cast<Button*>(params.at(1));
+            Button* buttonPtr = static_cast<Button*>(params.at(0));
+            Button::ButtonType btnType = buttonPtr->getType();
 
             switch (btnType)
             {

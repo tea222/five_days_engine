@@ -75,7 +75,7 @@ void Button::updateAndDraw(sf::RenderWindow& window)
                     _callback(this);
                 }
                 else {
-                    EventsController::notify(EventType::STOCK_BUTTON_PRESSED, {&_type, this});
+                    EventsController::notify(EventType::STOCK_BUTTON_PRESSED, { this });
                 }
             }
             _isPressed = false;
