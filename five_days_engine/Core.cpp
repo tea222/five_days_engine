@@ -141,64 +141,15 @@ Core::Core()
     , _hasGameStarted(false)
     , _gameCamera(sf::View(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(0.0f, 0.0f)))
 {
+    EventsController::addListener(this);
+
     Settings::load();
     loadLines();
-
-    // init stock button callbacks
-    onPlayBtnPressed = [&](Button* buttonPtr) {         // PLAY
-        _currentState = GameState::GAME;
-        _hasGameStarted = true;
-    };
-
-    onContinueBtnPressed = [&](Button* buttonPtr) {     // CONTINUE
-        _currentState = GameState::GAME;
-    };
-
-    onSettingsBtnPressed = [&](Button* buttonPtr) {     // SETTINGS
-        _currentSubMenu = SubMenu::SETTINGS;
-    };
-
-    onExitBtnPressed = [&](Button* buttonPtr) {         // EXIT
-        _window.close();
-    };
-
-    onResolutionBtnPressed = [&](Button* buttonPtr) {   // CHANGE RESOLUTION
-        static std::vector<sf::VideoMode> allVideomodes = sf::VideoMode::getFullscreenModes();
-
-        auto currentVideoModeIt = std::find_if(allVideomodes.begin(), allVideomodes.end(), [&](sf::VideoMode& mode) {
-            return mode == Settings::getVideomode();
-            });
-        currentVideoModeIt += 1;
-        currentVideoModeIt = currentVideoModeIt == allVideomodes.end() ? allVideomodes.begin() : currentVideoModeIt;
-
-        Settings::setVideomode(*currentVideoModeIt);
-        buttonPtr->setAdditionalLabelStr(getCurrentResolutionStr());
-        createWindow();
-    };
-
-    onWindowModeBtnPressed = [&](Button* buttonPtr) {   // WINDOW MODE
-        bool setWindowMode = Settings::getWindowStyle() == sf::Style::Fullscreen;
-        Settings::setWindowStyle(setWindowMode ? sf::Style::Default : sf::Style::Fullscreen);
-
-        buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setWindowMode ? SwitchButtonState::ON : SwitchButtonState::OFF]);
-        createWindow();
-    };
-
-    onVerticalSyncBtnPressed = [&](Button* buttonPtr) { // VERTICAL SYNC
-        bool setEnabled = !Settings::getVerticalSyncEnabled();
-        Settings::setVerticalSyncEnabled(setEnabled);
-        _window.setVerticalSyncEnabled(setEnabled);
-
-        buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setEnabled ? SwitchButtonState::ON : SwitchButtonState::OFF]);
-    };
-
-    onBackBtnPressed = [&](Button* buttonPtr) {         // BACK
-        _currentSubMenu = _hasGameStarted ? SubMenu::PAUSE : SubMenu::MAIN;
-    };
 }
 
 Core::~Core()
 {
+    EventsController::removeListener(this);
 }
 
 void Core::setSwitchButtonStateStrings(const SwitchButtonStateStringsMap& stringsMap)
@@ -227,6 +178,80 @@ std::wstring Core::getCurrentResolutionStr()
     return convertToWString(nStr);
 }
 
+void Core::onEvent(EventType eType, std::vector<void*> params)
+{
+    switch (eType)
+    {
+        case EventType::STOCK_BUTTON_PRESSED:   // STOCK BUTTON PRESSED
+        {
+            Button::ButtonType btnType = *(static_cast<Button::ButtonType*>(params.at(0)));
+            Button* buttonPtr = static_cast<Button*>(params.at(1));
+
+            switch (btnType)
+            {
+            case Button::ButtonType::PLAY:
+            case Button::ButtonType::CONTINUE:              // PLAY AND CONTINUE
+                _currentState = GameState::GAME;        
+                _hasGameStarted = true;
+                break;
+            case Button::ButtonType::SETTINGS_MAIN_MENU:    // SETTINGS
+            case Button::ButtonType::SETTINGS_PAUSE:
+                _currentSubMenu = SubMenu::SETTINGS;
+                break;
+            case Button::ButtonType::EXIT_MAIN_MENU:        // EXIT
+            case Button::ButtonType::EXIT_PAUSE:
+                _window.close();
+                break;
+            case Button::ButtonType::CHANGE_RESOLUTION:     // RESOLUTION
+            {
+                static std::vector<sf::VideoMode> allVideomodes = sf::VideoMode::getFullscreenModes();
+
+                auto currentVideoModeIt = std::find_if(allVideomodes.begin(), allVideomodes.end(), [&](sf::VideoMode& mode) {
+                    return mode == Settings::getVideomode();
+                    });
+                currentVideoModeIt += 1;
+                currentVideoModeIt = currentVideoModeIt == allVideomodes.end() ? allVideomodes.begin() : currentVideoModeIt;
+
+                Settings::setVideomode(*currentVideoModeIt);
+                buttonPtr->setAdditionalLabelStr(getCurrentResolutionStr());
+                createWindow();
+                break;
+            }
+            case Button::ButtonType::WINDOW_MODE:           // WINDOW MODE
+            {
+                bool setWindowMode = Settings::getWindowStyle() == sf::Style::Fullscreen;
+                Settings::setWindowStyle(setWindowMode ? sf::Style::Default : sf::Style::Fullscreen);
+
+                buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setWindowMode ? SwitchButtonState::ON : SwitchButtonState::OFF]);
+                createWindow();
+
+                break;
+            }
+            case Button::ButtonType::VERTICAL_SYNC:         // VERTICAL SYNC
+            {
+                bool setEnabled = !Settings::getVerticalSyncEnabled();
+                Settings::setVerticalSyncEnabled(setEnabled);
+                _window.setVerticalSyncEnabled(setEnabled);
+
+                buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setEnabled ? SwitchButtonState::ON : SwitchButtonState::OFF]);
+
+                break;
+            }
+            case Button::ButtonType::BACK:                  // BACK
+                _currentSubMenu = _hasGameStarted ? SubMenu::PAUSE : SubMenu::MAIN;
+
+                break;
+            default:
+                break;
+            }
+
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 void Core::loadLines()
 {
     std::ifstream file;
@@ -241,87 +266,76 @@ void Core::loadLines()
     file.close();
 }
 
-void Core::addStockButton(StockButton buttonType, const std::wstring& title)
+void Core::addStockButton(Button::ButtonType buttonType, const std::wstring& title)
 {
     SubMenu subMenu(SubMenu::MAIN);
     sf::Vector2u position(0, 0);
-    Button::ButtonCallback callback = onExitBtnPressed;
     bool useAdditionalLabel = false;
     std::wstring additLabelStr;
 
     switch (buttonType)
     {
-    case Core::StockButton::PLAY:
+    case Button::ButtonType::PLAY:
         subMenu = SubMenu::MAIN;
         position = sf::Vector2u(2, 8);
-        callback = onPlayBtnPressed;
         break;
-    case Core::StockButton::CONTINUE:
+    case Button::ButtonType::CONTINUE:
         subMenu = SubMenu::PAUSE;
         position = sf::Vector2u(2, 8);
-        callback = onContinueBtnPressed;
         break;
-    case Core::StockButton::SETTINGS_MAIN_MENU:
+    case Button::ButtonType::SETTINGS_MAIN_MENU:
         subMenu = SubMenu::MAIN;
-        position = sf::Vector2u(2, 10);
-        callback = onSettingsBtnPressed;
+        position = sf::Vector2u(3, 10);
         break;
-    case Core::StockButton::SETTINGS_PAUSE:
+    case Button::ButtonType::SETTINGS_PAUSE:
         subMenu = SubMenu::PAUSE;
-        position = sf::Vector2u(2, 10);
-        callback = onSettingsBtnPressed;
+        position = sf::Vector2u(3, 10);
         break;
-    case Core::StockButton::EXIT_MAIN_MENU:
+    case Button::ButtonType::EXIT_MAIN_MENU:
         subMenu = SubMenu::MAIN;
-        position = sf::Vector2u(2, 12);
-        callback = onExitBtnPressed;
+        position = sf::Vector2u(4, 12);
         break;
-    case Core::StockButton::EXIT_PAUSE:
+    case Button::ButtonType::EXIT_PAUSE:
         subMenu = SubMenu::PAUSE;
-        position = sf::Vector2u(2, 12);
-        callback = onExitBtnPressed;
+        position = sf::Vector2u(4, 12);
         break;
-    case Core::StockButton::CHANGE_RESOLUTION:
+    case Button::ButtonType::CHANGE_RESOLUTION:
         subMenu = SubMenu::SETTINGS;
         position = sf::Vector2u(2, 8);
-        callback = onResolutionBtnPressed;
         useAdditionalLabel = true;
         additLabelStr = getCurrentResolutionStr();
         break;
-    case Core::StockButton::WINDOW_MODE:
+    case Button::ButtonType::WINDOW_MODE:
         subMenu = SubMenu::SETTINGS;
         position = sf::Vector2u(2, 10);
-        callback = onWindowModeBtnPressed;
         useAdditionalLabel = true;
         additLabelStr = _switchBtnStateStringsMap[Settings::getWindowStyle() == sf::Style::Default ? SwitchButtonState::ON : SwitchButtonState::OFF];
         break;
-    case Core::StockButton::VERTICAL_SYNC:
+    case Button::ButtonType::VERTICAL_SYNC:
         subMenu = SubMenu::SETTINGS;
         position = sf::Vector2u(2, 12);
-        callback = onVerticalSyncBtnPressed;
         useAdditionalLabel = true;
         additLabelStr = _switchBtnStateStringsMap[Settings::getVerticalSyncEnabled() ? SwitchButtonState::ON : SwitchButtonState::OFF];
         break;
-    case Core::StockButton::BACK:
+    case Button::ButtonType::BACK:
         subMenu = SubMenu::SETTINGS;
         position = sf::Vector2u(2, 14);
-        callback = onBackBtnPressed;
         break;
     default:
         break;
     }
 
-    addButton(subMenu, position, title, callback, useAdditionalLabel, additLabelStr);
+    addButton(subMenu, position, title, buttonType, useAdditionalLabel, additLabelStr);
 }
 
-void Core::addAllStockButtons(std::map<StockButton, std::wstring> titles)
+void Core::addAllStockButtons(std::map<Button::ButtonType, std::wstring> titles)
 {
     int i = 0;
-    StockButton btn = static_cast<StockButton>(i);
-    while (i <= static_cast<int>(StockButton::BACK))
+    Button::ButtonType btn = static_cast<Button::ButtonType>(i);
+    while (i < static_cast<int>(Button::ButtonType::CUSTOM))
     {
         addStockButton(btn, titles[btn]);
-        btn = static_cast<StockButton>(++i);
+        btn = static_cast<Button::ButtonType>(++i);
     }
 }
 
@@ -329,4 +343,10 @@ void Core::addButton(SubMenu subMenu, const sf::Vector2u& position, const std::w
     Button::ButtonCallback callback, bool useAdditionalLabel, const std::wstring& additionalLabelStr)
 {
     _menuButtons[subMenu].push_back(Button(position, title, callback, useAdditionalLabel, additionalLabelStr));
+}
+
+void Core::addButton(SubMenu subMenu, const sf::Vector2u& position, const std::wstring& title, 
+    Button::ButtonType btnType, bool useAdditionalLabel, const std::wstring& additionalLabelStr)
+{
+    _menuButtons[subMenu].push_back(Button(position, title, btnType, useAdditionalLabel, additionalLabelStr));
 }

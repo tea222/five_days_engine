@@ -32,11 +32,11 @@ int main() {
     core.setSwitchButtonStateStrings(map);
 
     // set stock button strings
-    std::map<Core::StockButton, std::wstring> stockBtnsTitles;
+    std::map<Button::ButtonType, std::wstring> stockBtnsTitles;
     int i = 0;
-    while (i <= static_cast<int>(Core::StockButton::BACK))
+    while (i < static_cast<int>(Button::ButtonType::CUSTOM))
     {
-        Core::StockButton btn = static_cast<Core::StockButton>(i);
+        Button::ButtonType btn = static_cast<Button::ButtonType>(i);
         Line btnTitle = static_cast<Line>(i);
         stockBtnsTitles[btn] = core.getLineById(static_cast<unsigned>(btnTitle));
         i++;

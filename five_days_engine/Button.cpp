@@ -2,28 +2,32 @@
 
 Button::Button(const sf::Vector2u& position, const std::wstring& title, ButtonCallback callback,
     bool useAdditionalLabel, const std::wstring& additionalLabelStr)
-    : _position(position)
+    : _type(ButtonType::CUSTOM)
+    , _position(position)
     , _callback(callback) 
     , _isPressed(false)
     , _isHover(false)
     , _useAdditionalLabel(useAdditionalLabel)
 {
-    // init convex
-    _convex.setOutlineColor(Settings::getButtonOutlineColor());
-    _convex.setOutlineThickness(Settings::getButtonOutlineThickness());
-    _convex.setPointCount(6);
-    updateConvexPoints();
+    init(title, additionalLabelStr);
+}
 
-    // init text
-    _title.setFont(Settings::getFont());
-    _title.setString(title);
-
-    // init additional label
-    _additionalLabel.setFont(Settings::getFont());
-    _additionalLabel.setString(additionalLabelStr);
+Button::Button(const sf::Vector2u& position, const std::wstring& title, ButtonType btnType, bool useAdditionalLabel, const std::wstring& additionalLabelStr)
+    : _type(btnType)
+    , _position(position)
+    , _isPressed(false)
+    , _isHover(false)
+    , _useAdditionalLabel(useAdditionalLabel)
+{
+    init(title, additionalLabelStr);
 }
 
 Button::~Button() {
+}
+
+Button::ButtonType Button::getType()
+{
+    return _type;
 }
 
 void Button::setAdditionalLabelStr(const std::wstring& str)
@@ -67,7 +71,12 @@ void Button::updateAndDraw(sf::RenderWindow& window)
         else {
             // if it was pressed and now its not
             if (_isPressed) {
-                _callback(this);
+                if (_type == ButtonType::CUSTOM){
+                    _callback(this);
+                }
+                else {
+                    EventsController::notify(EventType::STOCK_BUTTON_PRESSED, {&_type, this});
+                }
             }
             _isPressed = false;
             _convex.setFillColor(Settings::getButtonColorHover());
@@ -87,6 +96,23 @@ void Button::updateAndDraw(sf::RenderWindow& window)
     {
         window.draw(_additionalLabel);
     }
+}
+
+void Button::init(const std::wstring& title, const std::wstring& additionalLabelStr)
+{
+    // init convex
+    _convex.setOutlineColor(Settings::getButtonOutlineColor());
+    _convex.setOutlineThickness(Settings::getButtonOutlineThickness());
+    _convex.setPointCount(6);
+    updateConvexPoints();
+
+    // init text
+    _title.setFont(Settings::getFont());
+    _title.setString(title);
+
+    // init additional label
+    _additionalLabel.setFont(Settings::getFont());
+    _additionalLabel.setString(additionalLabelStr);
 }
 
 void Button::updateConvexPoints()
