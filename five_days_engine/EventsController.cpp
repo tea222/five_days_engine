@@ -20,13 +20,8 @@ void EventsController::removeListener(IEventsListener* listener)
 
 void EventsController::notify(EventType eType, std::vector<void*> params)
 {
-    va_list args;
-    va_start(args, eType);
-
     for (IEventsListener* listener : _listeners)
     {
         listener->onEvent(eType, params);
     }
-
-    va_end(args);
 }
