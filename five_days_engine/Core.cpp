@@ -19,6 +19,8 @@ void Core::launchGame()
     backgroundTexture->loadFromFile("Resources/background.jpg");
     sf::Vector2f backgroundSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
     _menuBackground.setTexture(backgroundTexture);
+    _menuBackground.setSize(backgroundSize);
+    _menuBackground.setOrigin(backgroundSize / 2.0f);
 
     // main loop 
     while (_window.isOpen())
@@ -79,11 +81,8 @@ void Core::launchGame()
             _window.clear(sf::Color::Black);
 
             // background
-            sf::Vector2f textureSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
             sf::Vector2f viewSize = sf::Vector2f(Settings::getVideomode().width, Settings::getVideomode().height);
-            _menuBackground.setScale(viewSize.x / textureSize.x, viewSize.y / textureSize.y);
-            _menuBackground.setSize(textureSize);
-            _menuBackground.setOrigin(textureSize /2.0f);
+            _menuBackground.setScale(viewSize.x / backgroundSize.x, viewSize.y / backgroundSize.y);
             _menuBackground.setPosition(viewSize / 2.0f);
             _window.draw(_menuBackground);
 
