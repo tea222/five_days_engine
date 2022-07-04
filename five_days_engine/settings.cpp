@@ -1,6 +1,7 @@
 #include "Settings.h"
 
 sf::VideoMode   Settings::_videomode                = sf::VideoMode::getDesktopMode();
+sf::VideoMode   Settings::_defaultVideomode                = sf::VideoMode::getDesktopMode();
 unsigned int    Settings::_windowStyle              = sf::Style::Default;
 std::string     Settings::_windowTitle              = "";
 sf::Vector2f    Settings::_uiMapCellSize            = sf::Vector2f(0.0f, 0.0f);
@@ -19,11 +20,12 @@ void Settings::load()
 {
 #ifdef RELEASE
     _windowStyle            = sf::Style::Fullscreen;
-    setVideomode(sf::VideoMode::getDesktopMode());  // native resolution
+    _defaultVideomode       = sf::VideoMode::getDesktopMode(); // native resolution
 #else
     _windowStyle            = sf::Style::Default;
-    setVideomode(sf::VideoMode(1280, 720, 32));     // 720p
+    _defaultVideomode =     sf::VideoMode(1280, 720, 32); // 720p
 #endif
+    setVideomode(_defaultVideomode);
     _windowTitle            = "five_days_engine";
     _buttonColorNormal      = sf::Color(255, 255, 255, 50);
     _buttonColorHover       = sf::Color(255, 255, 255, 100);
@@ -37,6 +39,11 @@ void Settings::load()
 const sf::VideoMode& Settings::getVideomode()
 {
     return _videomode;
+}
+
+const sf::VideoMode& Settings::getDefaultVideomode()
+{
+    return _defaultVideomode;
 }
 
 unsigned int Settings::getWindowStyle()
@@ -105,7 +112,7 @@ void Settings::setVideomode(const sf::VideoMode& videoMode)
 
     _uiMapCellSize.x = _videomode.width / UI_MAP_SIZE.x;
     _uiMapCellSize.y = _videomode.height / UI_MAP_SIZE.y;
-    _buttonSize = sf::Vector2f(_uiMapCellSize.x * 8, _uiMapCellSize.y);
+    _buttonSize = sf::Vector2f(_uiMapCellSize.x * 8, _uiMapCellSize.y); // 8 x 1 cells
     _buttonOutlineThickness = _uiMapCellSize.y / 10.0f;                 // 1/10 cell height
     _characterSize = static_cast<unsigned>(_uiMapCellSize.x / 1.25f);   // 4/5  cell width
 }

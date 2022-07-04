@@ -15,6 +15,7 @@ class Settings
 private:
     // window
     static sf::VideoMode    _videomode;
+    static sf::VideoMode    _defaultVideomode;
     static bool             _verticalSyncEnabled;
     static unsigned int     _windowStyle;
     static std::string      _windowTitle;
@@ -41,6 +42,7 @@ public:
 
     // getters
     static const sf::VideoMode& getVideomode();
+    static const sf::VideoMode& getDefaultVideomode();
     static unsigned int         getWindowStyle();
     static const std::string&   getWindowTitle();
     static const sf::Vector2f&  getUiMapCellSize();

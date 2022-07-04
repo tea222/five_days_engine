@@ -18,7 +18,6 @@ void Core::launchGame()
     sf::Texture* backgroundTexture = new sf::Texture();
     backgroundTexture->loadFromFile("Resources/background.jpg");
     sf::Vector2f backgroundSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
-    _menuBackground.setSize(backgroundSize);
     _menuBackground.setTexture(backgroundTexture);
 
     // main loop 
@@ -54,13 +53,22 @@ void Core::launchGame()
                         break;
                     }
                     break;
-                case sf::Event::Resized:
+                case sf::Event::Resized: // resized
                 {
                     sf::Vector2f viewSize(e.size.width, e.size.height);
                     sf::VideoMode newVideoMode(viewSize.x, viewSize.y);
                     Settings::setVideomode(newVideoMode);
                     sf::View newView(viewSize / 2.0f, viewSize);
                     _window.setView(newView);
+
+                    auto beginIt = _menuButtons[SubMenu::SETTINGS].begin();
+                    auto endIt = _menuButtons[SubMenu::SETTINGS].end();
+                    auto resolutionBtn = std::find_if(beginIt, endIt, [&](Button& btn) {
+                        return btn.getType() == Button::ButtonType::CHANGE_RESOLUTION;
+                        });
+                    if (resolutionBtn != endIt) {
+                        resolutionBtn->setAdditionalLabelStr(getCurrentResolutionStr());
+                    }
                     break;
                 }
                 default:
@@ -72,11 +80,11 @@ void Core::launchGame()
 
             // background
             sf::Vector2f textureSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
-            sf::Vector2f windowSize = static_cast<sf::Vector2f>(_window.getSize());
-            float scale = windowSize.x / textureSize.x;
-            _menuBackground.setSize(textureSize * scale);
-            _menuBackground.setOrigin(textureSize * scale / 2.0f);
-            _menuBackground.setPosition(windowSize / 2.0f);
+            sf::Vector2f viewSize = sf::Vector2f(Settings::getVideomode().width, Settings::getVideomode().height);
+            _menuBackground.setScale(viewSize.x / textureSize.x, viewSize.y / textureSize.y);
+            _menuBackground.setSize(textureSize);
+            _menuBackground.setOrigin(textureSize /2.0f);
+            _menuBackground.setPosition(viewSize / 2.0f);
             _window.draw(_menuBackground);
 
             // buttons
@@ -205,10 +213,10 @@ void Core::onEvent(EventType eType, std::vector<void*> params)
             case Button::ButtonType::CHANGE_RESOLUTION:     // RESOLUTION
             {
                 static std::vector<sf::VideoMode> allVideomodes = sf::VideoMode::getFullscreenModes();
-
-                auto currentVideoModeIt = std::find_if(allVideomodes.begin(), allVideomodes.end(), [&](sf::VideoMode& mode) {
-                    return mode == Settings::getVideomode();
+                static auto currentVideoModeIt = std::find_if(allVideomodes.begin(), allVideomodes.end(), [&](sf::VideoMode& mode) {
+                    return mode == Settings::getDefaultVideomode();
                     });
+
                 currentVideoModeIt += 1;
                 currentVideoModeIt = currentVideoModeIt == allVideomodes.end() ? allVideomodes.begin() : currentVideoModeIt;
 

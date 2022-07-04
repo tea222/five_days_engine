@@ -21,7 +21,7 @@ public:
         VERTICAL_SYNC,      // enamge / disable vertical sync (settings menu)
         BACK,               // go back (settings menu)
         CUSTOM              // a custom button
-    }; // CUSTOM must be the last element
+    };
 
     using ButtonCallback = std::function<void(Button*)>;
 
