@@ -9,6 +9,8 @@
 #include "EventsController.h"
 #include "Settings.h"
 #include "Button.h"
+#include "Player.h"
+#include "World.h"
 
 class Core
     : public IEventsListener
@@ -50,7 +52,11 @@ private:
         GAME
     };
 
+    Player _player;
+    World _currentWorld;
+
     sf::RenderWindow _window;
+    sf::View _camera;
     GameState _currentState;
     SubMenu _currentSubMenu;
     bool _hasGameStarted;

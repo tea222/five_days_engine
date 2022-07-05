@@ -14,6 +14,11 @@ void Core::launchGame()
 
     createWindow();
 
+    _camera = _window.getView();
+
+    sf::Clock timer;
+    float delta = 0.0f;
+
     // init background
     sf::Texture* backgroundTexture = new sf::Texture();
     backgroundTexture->loadFromFile("Resources/background.jpg");
@@ -27,118 +32,137 @@ void Core::launchGame()
     {
         switch (_currentState)
         {
-        case GameState::MENU:
-        {
-            // events
-            sf::Event e;
-            while (_window.pollEvent(e))
+            case GameState::MENU:
             {
-                switch (e.type) {
-                case sf::Event::Closed: // window closed
-                    _window.close();
-                    break;
-                case sf::Event::KeyPressed: // key pressed
-                    switch (e.key.code)
-                    {
-#ifndef RELEASE
-                    case sf::Keyboard::F5:
-                        goto restart;
+                // events
+                sf::Event e;
+                while (_window.pollEvent(e))
+                {
+                    switch (e.type) {
+                    case sf::Event::Closed: // window closed
+                        _window.close();
                         break;
-#endif                  
-                    case sf::Keyboard::Escape:
-                        if (_currentSubMenu == SubMenu::SETTINGS)
+                    case sf::Event::KeyPressed: // key pressed
+                        switch (e.key.code)
                         {
-                            _currentSubMenu = _hasGameStarted ? SubMenu::PAUSE : SubMenu::MAIN;
+    #ifndef RELEASE
+                        case sf::Keyboard::F5:
+                            goto restart;
+                            break;
+    #endif                  
+                        case sf::Keyboard::Escape:
+                            if (_currentState == GameState::MENU) {
+                                if (_currentSubMenu == SubMenu::PAUSE) {
+                                    _currentState = GameState::GAME;
+                                }
+                                else if (_currentSubMenu == SubMenu::SETTINGS) {
+                                    _currentSubMenu = _hasGameStarted ? SubMenu::PAUSE : SubMenu::MAIN;
+                                }
+                            }
+                            break;
+                        default:
+                            break;
                         }
                         break;
+                    case sf::Event::Resized: // resized
+                    {
+                        sf::Vector2f viewSize(e.size.width, e.size.height);
+                        sf::VideoMode newVideoMode(viewSize.x, viewSize.y);
+                        Settings::setVideomode(newVideoMode);
+                        sf::View newView(viewSize / 2.0f, viewSize);
+                        _window.setView(newView);
+
+                        auto beginIt = _menuButtons[SubMenu::SETTINGS].begin();
+                        auto endIt = _menuButtons[SubMenu::SETTINGS].end();
+                        auto resolutionBtn = std::find_if(beginIt, endIt, [&](Button& btn) {
+                            return btn.getType() == Button::ButtonType::CHANGE_RESOLUTION;
+                            });
+                        if (resolutionBtn != endIt) {
+                            resolutionBtn->setAdditionalLabelStr(getCurrentResolutionStr());
+                        }
+                        break;
+                    }
                     default:
                         break;
                     }
-                    break;
-                case sf::Event::Resized: // resized
-                {
-                    sf::Vector2f viewSize(e.size.width, e.size.height);
-                    sf::VideoMode newVideoMode(viewSize.x, viewSize.y);
-                    Settings::setVideomode(newVideoMode);
-                    sf::View newView(viewSize / 2.0f, viewSize);
-                    _window.setView(newView);
-
-                    auto beginIt = _menuButtons[SubMenu::SETTINGS].begin();
-                    auto endIt = _menuButtons[SubMenu::SETTINGS].end();
-                    auto resolutionBtn = std::find_if(beginIt, endIt, [&](Button& btn) {
-                        return btn.getType() == Button::ButtonType::CHANGE_RESOLUTION;
-                        });
-                    if (resolutionBtn != endIt) {
-                        resolutionBtn->setAdditionalLabelStr(getCurrentResolutionStr());
-                    }
-                    break;
                 }
-                default:
-                    break;
+                // render 
+                _window.clear(sf::Color::Black);
+
+                // normalize camera center
+                sf::View menuCamera = _window.getView();
+                menuCamera.setCenter(menuCamera.getSize() / 2.0f);
+                _window.setView(menuCamera);
+
+                // background
+                sf::Vector2f viewSize = sf::Vector2f(Settings::getVideomode().width, Settings::getVideomode().height);
+                _menuBackground.setScale(viewSize.x / backgroundSize.x, viewSize.y / backgroundSize.y);
+                _menuBackground.setPosition(viewSize / 2.0f);
+                _window.draw(_menuBackground);
+
+                // buttons
+                auto& currentButtons = _menuButtons[_currentSubMenu];
+                for (Button& btn : currentButtons) {
+                    btn.updateAndDraw(_window);
                 }
+
+                _window.display();
+                break;
             }
-            // render 
-            _window.clear(sf::Color::Black);
-
-            // background
-            sf::Vector2f viewSize = sf::Vector2f(Settings::getVideomode().width, Settings::getVideomode().height);
-            _menuBackground.setScale(viewSize.x / backgroundSize.x, viewSize.y / backgroundSize.y);
-            _menuBackground.setPosition(viewSize / 2.0f);
-            _window.draw(_menuBackground);
-
-            // buttons
-            auto& currentButtons = _menuButtons[_currentSubMenu];
-            for (Button& btn : currentButtons) {
-                btn.updateAndDraw(_window);
-            }
-
-            _window.display();
-            break;
-        }
-        case GameState::GAME:
-        {
-            // events
-            sf::Event e;
-            while (_window.pollEvent(e))
+            case GameState::GAME:
             {
-                switch (e.type) {
-                case sf::Event::Closed: // window closed
-                    _window.close();
-                    break;
-                case sf::Event::KeyPressed:
-                    switch (e.key.code)
-                    {
-                    case sf::Keyboard::Escape:
-                    {
-                        _currentState = GameState::MENU;
-                        _currentSubMenu = SubMenu::PAUSE;
+                // events
+                sf::Event e;
+                while (_window.pollEvent(e))
+                {
+                    switch (e.type) {
+                    case sf::Event::Closed: // window closed
+                        _window.close();
                         break;
-                    }
-                    default:
-                        break;
+                    case sf::Event::KeyPressed: // key pressed
+                        switch (e.key.code)
+                        {
+                        case sf::Keyboard::Escape:
+                        {
+                            _currentState = GameState::MENU;
+                            _currentSubMenu = SubMenu::PAUSE;
+                            break;
+                        }
+                        default:
+                            break;
+                        }
                     }
                 }
+
+                // render 
+                _window.clear(sf::Color::Black);
+
+                _player.update(delta);
+
+                // normalize camera center
+                _camera.setCenter(_player.getPosition());
+                _window.setView(_camera);
+
+                sf::Text text;
+                text.setString("this is where the game is supposed to be..");
+                text.setFont(Settings::getFont());
+                text.setPosition(500, 200);
+                _window.draw(text);
+
+                
+
+                _window.draw(_player);
+                _window.draw(_currentWorld);
+
+
+                _window.display();
+
+                delta = timer.getElapsedTime().asSeconds();
+                break;
             }
-
-            // render 
-            _window.clear(sf::Color::Black);
-
-
-
-            sf::Text text;
-            text.setString("this is where the game is supposed to be..");
-            text.setFont(Settings::getFont());
-            text.setPosition(500, 200);
-            _window.draw(text);
-
-
-
-            _window.display();
-            break;
         }
-        default:
-            break;
-        }
+
+        timer.restart();
     }
 }
 
@@ -147,10 +171,12 @@ Core::Core()
     , _currentSubMenu(SubMenu::MAIN)
     , _hasGameStarted(false)
     , _gameCamera(sf::View(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(0.0f, 0.0f)))
+    , _camera()
 {
     EventsController::addListener(this);
 
     Settings::load();
+    World::updateTileSize();
     loadLines();
 }
 

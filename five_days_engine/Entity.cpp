@@ -1,12 +1,17 @@
 #include "Entity.h"
 
 Entity::Entity()
-    : _health(0)
+    : _speed(0.0f)
+    , _health(0)
     , _velocity(0.0f, 0.0f)
 {
 }
 
 Entity::~Entity()
+{
+}
+
+void Entity::die()
 {
 }
 

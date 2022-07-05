@@ -5,6 +5,7 @@ sf::VideoMode   Settings::_defaultVideomode                = sf::VideoMode::getD
 unsigned int    Settings::_windowStyle              = sf::Style::Default;
 std::string     Settings::_windowTitle              = "";
 sf::Vector2f    Settings::_uiMapCellSize            = sf::Vector2f(0.0f, 0.0f);
+sf::Vector2f    Settings::_tileSize                 = sf::Vector2f(0.0f, 0.0f);
 unsigned int    Settings::_characterSize            = 0;
 sf::Color       Settings::_buttonColorNormal        = sf::Color::Black;
 sf::Color       Settings::_buttonColorHover         = sf::Color::Black;
@@ -26,6 +27,7 @@ void Settings::load()
     _defaultVideomode =     sf::VideoMode(1280, 720, 32); // 720p
 #endif
     setVideomode(_defaultVideomode);
+    _tileSize               = sf::Vector2f(64.0f, 32.0f);
     _windowTitle            = "five_days_engine";
     _buttonColorNormal      = sf::Color(255, 255, 255, 50);
     _buttonColorHover       = sf::Color(255, 255, 255, 100);
@@ -59,6 +61,11 @@ const std::string& Settings::getWindowTitle()
 const sf::Vector2f& Settings::getUiMapCellSize()
 {
     return _uiMapCellSize;
+}
+
+const sf::Vector2f& Settings::getTileSize()
+{
+    return _tileSize;
 }
 
 unsigned int Settings::getCharacterSize()

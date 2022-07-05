@@ -20,6 +20,7 @@ private:
     static unsigned int     _windowStyle;
     static std::string      _windowTitle;
     static sf::Vector2f     _uiMapCellSize;
+    static sf::Vector2f     _tileSize;
     static unsigned int     _characterSize;
 
     // design
@@ -46,6 +47,7 @@ public:
     static unsigned int         getWindowStyle();
     static const std::string&   getWindowTitle();
     static const sf::Vector2f&  getUiMapCellSize();
+    static const sf::Vector2f&  getTileSize();
     static unsigned int         getCharacterSize();
 
     static const sf::Color&     getButtonColorNormal();
