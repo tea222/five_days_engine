@@ -4,6 +4,11 @@
 #include <cassert>
 #include "SFML/Graphics.hpp"
 
+enum class TextureType {
+    BACKGROUND = 0,
+    PLAYER
+};
+
 class TextureManager
 {
 private:

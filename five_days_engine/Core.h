@@ -62,11 +62,6 @@ private:
         OFF
     };
 
-    enum class Textures {
-        BACKGROUND = 0,
-        PLAYER
-    };
-
     Player _player;
     World _currentWorld;
 

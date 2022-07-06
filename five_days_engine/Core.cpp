@@ -21,7 +21,7 @@ void Core::launchGame()
     _player.init();
 
     // init background
-    sf::Texture* backgroundTexture = TextureManager::getTexture((unsigned)(Textures::BACKGROUND));
+    sf::Texture* backgroundTexture = TextureManager::getTexture((unsigned)TextureType::BACKGROUND);
     sf::Vector2f backgroundSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
     _menuBackground.setTexture(backgroundTexture);
     _menuBackground.setSize(backgroundSize);
