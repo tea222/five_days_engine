@@ -158,6 +158,8 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TextManager.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +170,8 @@
     <ClInclude Include="IEventsListener.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Settings.h" />
+    <ClInclude Include="TextManager.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

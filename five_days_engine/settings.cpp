@@ -1,7 +1,7 @@
 #include "Settings.h"
 
 sf::VideoMode   Settings::_videomode                = sf::VideoMode::getDesktopMode();
-sf::VideoMode   Settings::_defaultVideomode                = sf::VideoMode::getDesktopMode();
+sf::VideoMode   Settings::_defaultVideomode         = sf::VideoMode::getDesktopMode();
 unsigned int    Settings::_windowStyle              = sf::Style::Default;
 std::string     Settings::_windowTitle              = "";
 sf::Vector2f    Settings::_uiMapCellSize            = sf::Vector2f(0.0f, 0.0f);

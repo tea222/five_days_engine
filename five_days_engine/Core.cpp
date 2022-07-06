@@ -18,10 +18,10 @@ void Core::launchGame()
 
     sf::Clock timer;
     float delta = 0.0f;
+    _player.init();
 
     // init background
-    sf::Texture* backgroundTexture = new sf::Texture();
-    backgroundTexture->loadFromFile("Resources/background.jpg");
+    sf::Texture* backgroundTexture = TextureManager::getTexture((unsigned)(Textures::BACKGROUND));
     sf::Vector2f backgroundSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
     _menuBackground.setTexture(backgroundTexture);
     _menuBackground.setSize(backgroundSize);
@@ -150,9 +150,8 @@ void Core::launchGame()
                 _window.draw(text);
 
                 
-
-                _window.draw(_player);
                 _window.draw(_currentWorld);
+                _window.draw(_player);
 
 
                 _window.display();
@@ -177,7 +176,8 @@ Core::Core()
 
     Settings::load();
     World::updateTileSize();
-    loadLines();
+    TextManager::loadAll();
+    TextureManager::loadAll();
 }
 
 Core::~Core()
@@ -185,30 +185,12 @@ Core::~Core()
     EventsController::removeListener(this);
 }
 
-void Core::setSwitchButtonStateStrings(const SwitchButtonStateStringsMap& stringsMap)
-{
-    _switchBtnStateStringsMap = stringsMap;
-}
-
-std::wstring& Core::getLineById(unsigned int id)
-{
-    return _lines.at(id);
-}
-
-std::wstring Core::convertToWString(std::string str)
-{
-    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wideStr = converter.from_bytes(str);
-
-    return wideStr;
-}
-
 std::wstring Core::getCurrentResolutionStr()
 {
     std::string nStr = ("(" + std::to_string(Settings::getVideomode().width) + ", " 
         + std::to_string(Settings::getVideomode().height) + ")");
 
-    return convertToWString(nStr);
+    return TextManager::convertToWString(nStr);
 }
 
 void Core::onEvent(EventType eType, std::vector<void*> params)
@@ -255,7 +237,7 @@ void Core::onEvent(EventType eType, std::vector<void*> params)
                 bool setWindowMode = Settings::getWindowStyle() == sf::Style::Fullscreen;
                 Settings::setWindowStyle(setWindowMode ? sf::Style::Default : sf::Style::Fullscreen);
 
-                buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setWindowMode ? SwitchButtonState::ON : SwitchButtonState::OFF]);
+                buttonPtr->setAdditionalLabelStr(TextManager::getStockLineById((unsigned)(setWindowMode ? StockLines::ON : StockLines::OFF)));
                 createWindow();
 
                 break;
@@ -266,7 +248,7 @@ void Core::onEvent(EventType eType, std::vector<void*> params)
                 Settings::setVerticalSyncEnabled(setEnabled);
                 _window.setVerticalSyncEnabled(setEnabled);
 
-                buttonPtr->setAdditionalLabelStr(_switchBtnStateStringsMap[setEnabled ? SwitchButtonState::ON : SwitchButtonState::OFF]);
+                buttonPtr->setAdditionalLabelStr(TextManager::getStockLineById((unsigned)(setEnabled ? StockLines::ON : StockLines::OFF)));
 
                 break;
             }
@@ -283,20 +265,6 @@ void Core::onEvent(EventType eType, std::vector<void*> params)
         default:
             break;
     }
-}
-
-void Core::loadLines()
-{
-    std::ifstream file;
-    file.open("Resources/Lines.txt");
-
-    assert(file.good());
-
-    std::string currentStr;
-    while (std::getline(file, currentStr)) {
-        _lines.push_back(convertToWString(currentStr));
-    }
-    file.close();
 }
 
 void Core::addStockButton(Button::ButtonType buttonType, const std::wstring& title)
@@ -342,13 +310,13 @@ void Core::addStockButton(Button::ButtonType buttonType, const std::wstring& tit
         subMenu = SubMenu::SETTINGS;
         position = sf::Vector2u(2, 10);
         useAdditionalLabel = true;
-        additLabelStr = _switchBtnStateStringsMap[Settings::getWindowStyle() == sf::Style::Default ? SwitchButtonState::ON : SwitchButtonState::OFF];
+        additLabelStr = TextManager::getStockLineById((unsigned)(Settings::getWindowStyle() == sf::Style::Default ? StockLines::ON : StockLines::OFF));
         break;
     case Button::ButtonType::VERTICAL_SYNC:
         subMenu = SubMenu::SETTINGS;
         position = sf::Vector2u(2, 12);
         useAdditionalLabel = true;
-        additLabelStr = _switchBtnStateStringsMap[Settings::getVerticalSyncEnabled() ? SwitchButtonState::ON : SwitchButtonState::OFF];
+        additLabelStr = TextManager::getStockLineById((unsigned)(Settings::getVerticalSyncEnabled() ? StockLines::ON : StockLines::OFF));
         break;
     case Button::ButtonType::BACK:
         subMenu = SubMenu::SETTINGS;
@@ -361,13 +329,14 @@ void Core::addStockButton(Button::ButtonType buttonType, const std::wstring& tit
     addButton(subMenu, position, title, buttonType, useAdditionalLabel, additLabelStr);
 }
 
-void Core::addAllStockButtons(std::map<Button::ButtonType, std::wstring> titles)
+void Core::addAllStockButtons()
 {
     int i = 0;
     Button::ButtonType btn = static_cast<Button::ButtonType>(i);
     while (i < static_cast<int>(Button::ButtonType::CUSTOM))
     {
-        addStockButton(btn, titles[btn]);
+        unsigned lineId = static_cast<unsigned>(btn);
+        addStockButton(btn, TextManager::getStockLineById(lineId));
         btn = static_cast<Button::ButtonType>(++i);
     }
 }

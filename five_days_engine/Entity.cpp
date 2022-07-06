@@ -1,5 +1,11 @@
 #include "Entity.h"
 
+void Entity::updatePosition(float delta)
+{
+    const sf::Vector2f& currentPos = _rect.getPosition();
+    _rect.setPosition(currentPos + _velocity * delta);
+}
+
 Entity::Entity()
     : _speed(0.0f)
     , _health(0)

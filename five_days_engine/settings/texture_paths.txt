@@ -1,0 +1,2 @@
+resources/textures/background.jpg
+resources/textures/player.jpg
