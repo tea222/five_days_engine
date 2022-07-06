@@ -20,7 +20,7 @@ void TextureManager::loadAll()
     file.close();
 }
 
-sf::Texture* TextureManager::getTexture(unsigned id)
+sf::Texture* TextureManager::getTexture(TextureType type)
 {
-    return _textures.at(id);
+    return _textures.at(static_cast<unsigned>(type));
 }
