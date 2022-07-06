@@ -70,16 +70,10 @@ void Core::launchGame()
                         sf::VideoMode newVideoMode(viewSize.x, viewSize.y);
                         Settings::setVideomode(newVideoMode);
                         sf::View newView(viewSize / 2.0f, viewSize);
+                        _camera.setSize(viewSize);
                         _window.setView(newView);
 
-                        auto beginIt = _menuButtons[SubMenu::SETTINGS].begin();
-                        auto endIt = _menuButtons[SubMenu::SETTINGS].end();
-                        auto resolutionBtn = std::find_if(beginIt, endIt, [&](Button& btn) {
-                            return btn.getType() == Button::ButtonType::CHANGE_RESOLUTION;
-                            });
-                        if (resolutionBtn != endIt) {
-                            resolutionBtn->setAdditionalLabelStr(getCurrentResolutionStr());
-                        }
+                        updateResolutionBtnStr();
                         break;
                     }
                     default:
@@ -130,7 +124,18 @@ void Core::launchGame()
                         }
                         default:
                             break;
-                        }
+                        }    
+                        break;
+                    case sf::Event::Resized: // resized
+                    {
+                        sf::Vector2f viewSize(e.size.width, e.size.height);
+                        sf::VideoMode newVideoMode(viewSize.x, viewSize.y);
+                        Settings::setVideomode(newVideoMode);
+                        _camera.setSize(viewSize);
+                        updateResolutionBtnStr();
+
+                        break;
+                    }
                     }
                 }
 
@@ -185,6 +190,18 @@ Core::~Core()
     EventsController::removeListener(this);
 }
 
+void Core::updateResolutionBtnStr()
+{
+    auto beginIt = _menuButtons[SubMenu::SETTINGS].begin();
+    auto endIt = _menuButtons[SubMenu::SETTINGS].end();
+    auto resolutionBtn = std::find_if(beginIt, endIt, [&](Button& btn) {
+        return btn.getType() == Button::ButtonType::CHANGE_RESOLUTION;
+        });
+    if (resolutionBtn != endIt) {
+        resolutionBtn->setAdditionalLabelStr(getCurrentResolutionStr());
+    }
+}
+
 std::wstring Core::getCurrentResolutionStr()
 {
     std::string nStr = ("(" + std::to_string(Settings::getVideomode().width) + ", " 
@@ -228,6 +245,7 @@ void Core::onEvent(EventType eType, std::vector<void*> params)
                 currentVideoModeIt = currentVideoModeIt == allVideomodes.end() ? allVideomodes.begin() : currentVideoModeIt;
 
                 Settings::setVideomode(*currentVideoModeIt);
+                _camera.setSize(currentVideoModeIt->width, currentVideoModeIt->height);
                 buttonPtr->setAdditionalLabelStr(getCurrentResolutionStr());
                 createWindow();
                 break;

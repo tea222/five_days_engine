@@ -80,6 +80,7 @@ private:
 
     void createWindow();
 
+    void updateResolutionBtnStr();
     std::wstring getCurrentResolutionStr();
 };
 
