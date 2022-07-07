@@ -8,9 +8,6 @@ void Core::createWindow()
 
 void Core::launchGame()
 {
-#ifndef RELEASE
-    restart :
-#endif
     
     createWindow();
     showLoadingScreen();
@@ -45,12 +42,7 @@ void Core::launchGame()
                         break;
                     case sf::Event::KeyPressed: // key pressed
                         switch (e.key.code)
-                        {
-    #ifndef RELEASE
-                        case sf::Keyboard::F5:
-                            goto restart;
-                            break;
-    #endif                  
+                        {                 
                         case sf::Keyboard::Escape:
                             if (_currentState == GameState::MENU) {
                                 if (_currentSubMenu == SubMenu::PAUSE) {
@@ -195,7 +187,7 @@ void Core::showLoadingScreen()
     sf::Text loadingText;
     loadingText.setFillColor(sf::Color::Cyan);
     loadingText.setFont(Settings::getFont());
-    loadingText.setString(TextManager::getStockLineById((unsigned)StockLines::LOADING));
+    loadingText.setString(TextManager::getStockLineById((unsigned)StockLines::LOADING) + TextManager::convertToWString(" (sup /gd)"));
     auto bounds = loadingText.getGlobalBounds();
 
     // put it at the center of window width and 1/6 height
