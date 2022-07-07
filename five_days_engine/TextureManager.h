@@ -6,7 +6,9 @@
 
 enum class TextureType {
     BACKGROUND = 0,
-    PLAYER
+    PLAYER_STAFF,
+    PLAYER_RED_THING,
+    PLAYER_PURPLE_THING
 };
 
 class TextureManager

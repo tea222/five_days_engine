@@ -11,11 +11,12 @@ void Core::launchGame()
 #ifndef RELEASE
     restart :
 #endif
-
+    
     createWindow();
+    showLoadingScreen();
+    TextureManager::loadAll();
 
     _camera = _window.getView();
-
     sf::Clock timer;
     float delta = 0.0f;
     _player.init();
@@ -182,12 +183,26 @@ Core::Core()
     Settings::load();
     World::updateTileSize();
     TextManager::loadAll();
-    TextureManager::loadAll();
 }
 
 Core::~Core()
 {
     EventsController::removeListener(this);
+}
+
+void Core::showLoadingScreen()
+{
+    sf::Text loadingText;
+    loadingText.setFillColor(sf::Color::Cyan);
+    loadingText.setFont(Settings::getFont());
+    loadingText.setString(TextManager::getStockLineById((unsigned)StockLines::LOADING));
+    auto bounds = loadingText.getGlobalBounds();
+
+    // put it at the center of window width and 1/6 height
+    loadingText.setPosition((_window.getSize().x - bounds.width) / 2.0f, _window.getSize().y * 5.0f / 6.0f);
+
+    _window.draw(loadingText);
+    _window.display();
 }
 
 void Core::updateResolutionBtnStr()

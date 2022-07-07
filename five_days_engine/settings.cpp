@@ -27,7 +27,7 @@ void Settings::load()
     _defaultVideomode =     sf::VideoMode(1280, 720, 32); // 720p
 #endif
     setVideomode(_defaultVideomode);
-    _tileSize               = sf::Vector2f(64.0f, 32.0f);
+    _tileSize               = sf::Vector2f(128.0f, 64.0f);
     _windowTitle            = "five_days_engine";
     _buttonColorNormal      = sf::Color(255, 255, 255, 50);
     _buttonColorHover       = sf::Color(255, 255, 255, 100);

@@ -15,8 +15,9 @@ void Player::init()
     _frameUpdatesDelay = 0.2f;
     _velocityUpdatesDelay = 0.05f;
     _speed = 300.0f;
-    _rect.setSize(sf::Vector2f(50, 150));
-    _rect.setTexture(TextureManager::getTexture(TextureType::PLAYER));
+    _rect.setSize(sf::Vector2f(128, 256));
+    _rect.setTexture(TextureManager::getTexture(TextureType::PLAYER_RED_THING));
+    _rect.setTextureRect(sf::IntRect(0,0,128,256));
 }
 
 void Player::update(float delta)

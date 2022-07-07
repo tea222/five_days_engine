@@ -59,7 +59,8 @@ private:
         VERTICAL_SYNC,
         BACK,
         ON,
-        OFF
+        OFF,
+        LOADING
     };
 
     Player _player;
@@ -80,6 +81,7 @@ private:
 
     void createWindow();
 
+    void showLoadingScreen();
     void updateResolutionBtnStr();
     std::wstring getCurrentResolutionStr();
 };
