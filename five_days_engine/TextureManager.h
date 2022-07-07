@@ -1,7 +1,6 @@
 #pragma once
 
 #include <fstream>
-#include <cassert>
 #include "SFML/Graphics.hpp"
 
 enum class TextureType {

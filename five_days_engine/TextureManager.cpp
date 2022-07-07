@@ -9,12 +9,12 @@ void TextureManager::loadAll()
     std::ifstream file;
     file.open("settings/texture_paths.txt");
 
-    assert(file.good());
+    if(!file.good()) return;
 
     std::string currentStr;
     while (std::getline(file, currentStr)) {
         sf::Texture* texture = new sf::Texture;
-        assert(texture->loadFromFile(currentStr));
+        texture->loadFromFile(currentStr);
         _textures.push_back(texture);
     }
     file.close();

@@ -17,7 +17,7 @@ void TextManager::loadAll()
 
     // stock lines
     file.open("resources/text/stock_lines.txt");
-    assert(file.good());
+    if (!file.good()) return;
 
     std::string currentStr;
     while (std::getline(file, currentStr)) {
@@ -27,7 +27,7 @@ void TextManager::loadAll()
     // custom lines
     file.close();
     file.open("resources/text/lines.txt");
-    assert(file.good());
+    if (!file.good()) return;
 
     while (std::getline(file, currentStr)) {
         _lines.push_back(convertToWString(currentStr));

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <codecvt>
-#include <cassert>
 #include <fstream>
 
 #include "SFML/Graphics.hpp"

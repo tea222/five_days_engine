@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <cassert>
 #include <codecvt>
 
 class TextManager
