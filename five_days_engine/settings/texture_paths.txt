@@ -1,4 +1,3 @@
-resources/textures/background.jpg
 resources/textures/player_staff.png
 resources/textures/player_red_thing.png
 resources/textures/player_purple_thing.png

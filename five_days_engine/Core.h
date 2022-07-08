@@ -73,7 +73,6 @@ private:
     bool _hasGameStarted;
 
     std::map<SubMenu, std::vector<Button>> _menuButtons;
-    sf::RectangleShape _menuBackground;
 
     sf::View _gameCamera;
 

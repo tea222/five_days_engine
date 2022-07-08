@@ -19,11 +19,12 @@ void Core::launchGame()
     _player.init();
 
     // init background
-    sf::Texture* backgroundTexture = TextureManager::getTexture(TextureType::BACKGROUND);
-    sf::Vector2f backgroundSize = static_cast<sf::Vector2f>(backgroundTexture->getSize());
-    _menuBackground.setTexture(backgroundTexture);
-    _menuBackground.setSize(backgroundSize);
-    _menuBackground.setOrigin(backgroundSize / 2.0f);
+    sf::RectangleShape menuBackground;
+    menuBackground.setPosition(0.0f, 0.0f);
+    menuBackground.setOrigin(0.0f, 0.0f);
+    sf::Shader mainMenuShader;
+    if (!mainMenuShader.loadFromFile("resources/main_menu.frag", sf::Shader::Type::Fragment)) return;
+
 
     // main loop 
     while (_window.isOpen())
@@ -83,9 +84,12 @@ void Core::launchGame()
 
                 // background
                 sf::Vector2f viewSize = sf::Vector2f(Settings::getVideomode().width, Settings::getVideomode().height);
-                _menuBackground.setScale(viewSize.x / backgroundSize.x, viewSize.y / backgroundSize.y);
-                _menuBackground.setPosition(viewSize / 2.0f);
-                _window.draw(_menuBackground);
+                menuBackground.setSize(viewSize);
+                mainMenuShader.setUniform("resolution", viewSize);
+                static float time = 0;
+                time += delta;
+                mainMenuShader.setUniform("time", time);
+                _window.draw(menuBackground, sf::RenderStates(&mainMenuShader));
 
                 // buttons
                 auto& currentButtons = _menuButtons[_currentSubMenu];
@@ -154,11 +158,11 @@ void Core::launchGame()
 
                 _window.display();
 
-                delta = timer.getElapsedTime().asSeconds();
                 break;
             }
         }
 
+        delta = timer.getElapsedTime().asSeconds();
         timer.restart();
     }
 }

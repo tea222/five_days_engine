@@ -4,8 +4,7 @@
 #include "SFML/Graphics.hpp"
 
 enum class TextureType {
-    BACKGROUND = 0,
-    PLAYER_STAFF,
+    PLAYER_STAFF = 0,
     PLAYER_RED_THING,
     PLAYER_PURPLE_THING
 };
